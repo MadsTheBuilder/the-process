@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=1920, height=1080">
+    <title>Operation Red Balloon — Part 1 Animatic</title>
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #0c0d0f; }
+      #root {
+        position: relative; width: 100%; height: 100%; overflow: hidden;
+        font-family: system-ui, sans-serif; color: #ece4d4; background: #0c0d0f;
+      }
+      .clip { position: absolute; inset: 0; }
+      .mono { font-family: ui-monospace, monospace; }
+
+      /* ---------- persistent chrome ---------- */
+      .hdr { position: absolute; left: 48px; right: 48px; top: 26px; height: 50px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2a2c31; }
+      .hdr .l { display: flex; align-items: center; gap: 16px; font-size: 20px; font-weight: 700; letter-spacing: 0.08em; }
+      .hdr .bar { width: 36px; height: 5px; background: #d0583c; }
+      .hdr .l span.sub { font-weight: 500; color: #9aa0a8; letter-spacing: 0.06em; font-size: 17px; }
+      .hdr .r { font-size: 15px; color: #9aa0a8; letter-spacing: 0.1em; display: flex; gap: 22px; align-items: center; }
+      .hdr .tc { color: #f0ae4e; font-size: 20px; letter-spacing: 0.04em; }
+      .panelframe { position: absolute; left: 48px; top: 96px; width: 1216px; height: 684px; border: 1px solid #3a3d44; }
+      .strip { position: absolute; left: 48px; top: 912px; width: 1824px; height: 132px; }
+      .seqrow { position: absolute; left: 0; top: 0; width: 100%; height: 26px; }
+      .seq { position: absolute; top: 0; height: 22px; border-top: 3px solid; font-size: 12px; letter-spacing: 0.1em; padding-top: 4px; color: #b9b3a8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+      .cells { position: absolute; left: 0; top: 34px; width: 100%; height: 84px; }
+      .cell { position: absolute; top: 0; height: 84px; border: 1px solid #33363c; border-top: 3px solid; background: #15171b; padding: 6px 5px; overflow: hidden; }
+      .cell b { display: block; font-size: 16px; color: #ece4d4; }
+            .cell em { display: block; font-style: normal; font-size: 11px; color: #9aa0a8; margin-top: 4px; }
+      .cell .on { position: absolute; inset: 0; border: 2px solid #f0ae4e; background: rgba(240, 174, 78, 0.1); opacity: 0; }
+      .playhead { position: absolute; top: 26px; left: 0; width: 3px; height: 100px; background: #d0583c; }
+
+      /* ---------- per shot ---------- */
+      .panel { position: absolute; left: 48px; top: 96px; width: 1216px; height: 684px; overflow: hidden; background: #111; }
+      .cam { position: absolute; inset: 0; width: 1216px; height: 684px; transform-origin: 50% 50%; }
+      .cam svg { display: block; width: 1216px; height: 684px; }
+      .hud { position: absolute; left: 18px; top: 52px; display: flex; gap: 10px; align-items: center; font-size: 15px; letter-spacing: 0.06em; }
+      .hud span { background: rgba(8, 9, 11, 0.78); padding: 5px 10px; border: 1px solid #3a3d44; }
+      .hud span.k { background: #d0583c; border-color: #d0583c; color: #0c0d0f; font-weight: 700; }
+      .corner { position: absolute; top: 14px; left: 18px; font-size: 14px; letter-spacing: 0.14em; background: rgba(8, 9, 11, 0.78); padding: 5px 10px; border: 1px solid #3a3d44; }
+      .plan { position: absolute; right: 14px; top: 14px; width: 250px; height: 172px; background: rgba(8, 9, 11, 0.82); border: 1px solid #3a3d44; }
+      .plan svg { display: block; width: 250px; height: 172px; }
+      .side { position: absolute; left: 1296px; top: 96px; width: 576px; height: 684px; border: 1px solid #2a2c31; background: #121417; padding: 22px 26px; }
+      .side .top { display: flex; align-items: center; gap: 14px; }
+      .side .num { font-size: 58px; font-weight: 800; line-height: 1; letter-spacing: -0.02em; }
+      .chip { font-size: 13px; letter-spacing: 0.14em; padding: 5px 9px; border: 1px solid #3a3d44; color: #b9b3a8; }
+      .chip.t { color: #0c0d0f; font-weight: 800; border: 0; }
+      .side h2 { font-size: 25px; font-weight: 700; margin-top: 12px; line-height: 1.2; }
+      .side .tcr { font-size: 15px; color: #f0ae4e; margin-top: 6px; letter-spacing: 0.04em; }
+      .rows { margin-top: 12px; border-top: 1px solid #2a2c31; }
+      .row { padding: 7px 0; border-bottom: 1px solid #22252a; }
+      .row .lb { font-size: 11px; letter-spacing: 0.18em; color: #d0583c; font-weight: 700; }
+      .row .v { font-size: 15.5px; line-height: 1.32; color: #ddd6c8; margin-top: 2px; }
+      .refs { position: absolute; left: 26px; right: 26px; bottom: 18px; }
+      .refs .lb { font-size: 11px; letter-spacing: 0.18em; color: #d0583c; font-weight: 700; margin-bottom: 6px; }
+      .thumbs { display: flex; gap: 12px; }
+      .thumb { width: 256px; }
+      .thumb .img { width: 256px; height: 118px; overflow: hidden; border: 1px solid #3a3d44; background: #000; }
+      .thumb img { display: block; width: 256px; height: 118px; object-fit: cover; }
+      .thumb .cap { font-size: 11.5px; color: #9aa0a8; margin-top: 4px; letter-spacing: 0.03em; line-height: 1.25; }
+      .zworld { position: absolute; left: 0; top: 0; width: 1216px; height: 684px; transform-origin: 0 0; }
+      .zplate { position: absolute; overflow: hidden; }
+      .zplate img, .zplate svg { display: block; width: 100%; height: 100%; object-fit: cover; }
+      .zret { position: absolute; left: 508px; top: 286px; width: 200px; height: 112px; border: 2px dashed #ee7d60; }
+      .zret span { position: absolute; left: -2px; top: -30px; white-space: nowrap; font-size: 13px; letter-spacing: 0.12em; color: #ee7d60; background: rgba(8, 9, 11, 0.8); padding: 4px 8px; }
+      .zlab { position: absolute; left: 18px; bottom: 18px; font-size: 14px; letter-spacing: 0.08em; background: rgba(8, 9, 11, 0.85); border: 1px solid #3a3d44; padding: 6px 10px; }
+      .zread { position: absolute; right: 18px; bottom: 18px; font-size: 22px; color: #f0ae4e; background: rgba(8, 9, 11, 0.85); border: 1px solid #3a3d44; padding: 6px 12px; }
+      .vo { position: absolute; left: 48px; top: 796px; width: 1824px; height: 100px; display: flex; align-items: center; gap: 22px; }
+      .vo .tag { font-size: 12px; letter-spacing: 0.18em; color: #0c0d0f; background: #ece4d4; padding: 6px 9px; font-weight: 800; flex: none; }
+      .vo .txt { font-size: 30px; font-weight: 600; line-height: 1.2; }
+      .vo .gl { font-size: 17px; color: #8a8f98; margin-top: 4px; }
+    </style>
+  </head>
+  <body>
+    <div data-hf-id="hf-at0g" id="root" data-composition-id="main" data-start="0" data-duration="102.3" data-width="1920" data-height="1080">
+      <div data-hf-id="hf-tpi8" id="chrome" class="clip" data-start="0" data-duration="102.3" data-track-index="0">
+        <div data-hf-id="hf-tyyu" class="hdr">
+          <div data-hf-id="hf-a2qd" class="l"><div data-hf-id="hf-ufsv" class="bar"></div>OPERATION RED BALLOON<span data-hf-id="hf-k53v" class="sub">PART 1 — MELA · GHANTA 00 · ANIMATIC STORYBOARD v3</span></div>
+          <div data-hf-id="hf-1rbm" class="r"><span data-hf-id="hf-662t" id="scn">SC.01 · MIRZAPUR DISTRICT → MELA</span><span data-hf-id="hf-yay5" id="tc" class="tc mono">00:00.0 / 01:42.3</span></div>
+        </div>
+        <div data-hf-id="hf-i9dx" class="panelframe"></div>
+        <div data-hf-id="hf-nyle" class="strip" id="strip"></div>
+      </div>
+
+      <section id="s0a" class="clip shot" data-start="0" data-duration="3.5" data-track-index="1"></section>
+      <section id="s1a" class="clip shot" data-start="3.5" data-duration="3" data-track-index="1"></section>
+      <section id="s1b" class="clip shot" data-start="6.5" data-duration="3.4" data-track-index="1"></section>
+      <section id="s2a" class="clip shot" data-start="9.9" data-duration="2.4" data-track-index="1"></section>
+      <section id="s2b" class="clip shot" data-start="12.3" data-duration="2.8" data-track-index="1"></section>
+      <section id="s2c" class="clip shot" data-start="15.1" data-duration="3" data-track-index="1"></section>
+      <section id="s3a" class="clip shot" data-start="18.1" data-duration="4.4" data-track-index="1"></section>
+      <section id="s3b" class="clip shot" data-start="22.5" data-duration="2.2" data-track-index="1"></section>
+      <section id="s3c" class="clip shot" data-start="24.7" data-duration="3.4" data-track-index="1"></section>
+      <section id="s4a" class="clip shot" data-start="28.1" data-duration="3.6" data-track-index="1"></section>
+      <section id="s4b" class="clip shot" data-start="31.7" data-duration="3.6" data-track-index="1"></section>
+      <section id="s4c" class="clip shot" data-start="35.3" data-duration="2.4" data-track-index="1"></section>
+      <section id="s4d" class="clip shot" data-start="37.7" data-duration="2.4" data-track-index="1"></section>
+      <section id="s5a" class="clip shot" data-start="40.1" data-duration="3.6" data-track-index="1"></section>
+      <section id="s5b" class="clip shot" data-start="43.7" data-duration="3.6" data-track-index="1"></section>
+      <section id="s5c" class="clip shot" data-start="47.3" data-duration="3.8" data-track-index="1"></section>
+      <section id="s5d" class="clip shot" data-start="51.1" data-duration="3.4" data-track-index="1"></section>
+      <section id="s5e" class="clip shot" data-start="54.5" data-duration="5" data-track-index="1"></section>
+      <section id="s5f" class="clip shot" data-start="59.5" data-duration="3.8" data-track-index="1"></section>
+      <section id="s5g" class="clip shot" data-start="63.3" data-duration="4" data-track-index="1"></section>
+      <section id="s6a" class="clip shot" data-start="67.3" data-duration="3.4" data-track-index="1"></section>
+      <section id="s6b" class="clip shot" data-start="70.7" data-duration="3.8" data-track-index="1"></section>
+      <section id="s6c" class="clip shot" data-start="74.5" data-duration="3.6" data-track-index="1"></section>
+      <section id="s6d" class="clip shot" data-start="78.1" data-duration="7" data-track-index="1"></section>
+      <section id="s6e" class="clip shot" data-start="85.1" data-duration="4.2" data-track-index="1"></section>
+      <section id="s6f" class="clip shot" data-start="89.3" data-duration="6" data-track-index="1"></section>
+      <section id="s6g" class="clip shot" data-start="95.3" data-duration="7" data-track-index="1"></section>
+    </div>
+
+    <script>
+      // ---------- palette + seeded PRNG (deterministic) ----------
+      const C = {
+        ink: "#ece4d4", skin: "#d8c6ad", crowd: "#3b4354", crowdFar: "#2b303b", dark: "#101216",
+        rust: "#d0583c", amber: "#f0ae4e", blue: "#3f74e8", cool: "#86a6dc",
+        father: "#b9cbe4", mother: "#e7d9bf", sister: "#d2703d", vendor: "#e6ddc6", host: "#8a7f63", khaki: "#a88f5c",
+      };
+      const TYPE = { WIDE: "#86a6dc", MEDIUM: "#f0ae4e", CLOSE: "#e36a4c" };
+      const SEQ = [
+        { n: "SEQ 0 · MIRZAPUR", s: "0", c: "#ece4d4" },
+        { n: "SEQ 1 · THE MELA", s: "1 · MELA", c: "#86a6dc" },
+        { n: "SEQ 2 · THE GUPTA FAMILY", s: "2 · FAMILY", c: "#f0ae4e" },
+        { n: "SEQ 3 · THE ZID & THE SLIP", s: "3 · THE SLIP", c: "#d0583c" },
+        { n: "SEQ 4 · THE SEARCH", s: "4 · THE SEARCH", c: "#8fc0a9" },
+        { n: "SEQ 5 · THE WITNESS", s: "5 · THE WITNESS", c: "#c98bd0" },
+        { n: "SEQ 6 · THE LADDER (NARRATOR)", s: "6 · THE LADDER (NARRATOR)", c: "#9aa0a8" },
+      ];
+      // header scene slug per sequence
+      const SCN = ["SC.01 · MIRZAPUR DISTRICT → MELA", "SC.01 · EXT. MIRZAPUR MELA / STALL LANE · EVENING 19:00", "SC.01 · EXT. MIRZAPUR MELA / STALL LANE · EVENING 19:00",
+        "SC.01 · EXT. MIRZAPUR MELA / STALL LANE · EVENING 19:00", "SC.01 · EXT. MIRZAPUR MELA / STALL LANE · 19:10", "SC.02 · EXT. BALLOON SELLER · NIGHT 19:15",
+        "SC.02 · INT. NARRATOR SET · OUTSIDE STORY TIME"];
+      function prng(seed) {
+        return function () {
+          seed |= 0; seed = (seed + 0x6d2b79f5) | 0;
+          let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+          t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+          return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+        };
+      }
+      const W = 1216, H = 684;
+      const f1 = (n) => Math.round(n * 10) / 10;
+
+      // ---------- SVG primitives ----------
+      const defs = `<defs>
+        <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#141c30"/><stop offset=".65" stop-color="#34436a"/><stop offset="1" stop-color="#6d5a5a"/></linearGradient>
+        <linearGradient id="dust" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3025"/><stop offset="1" stop-color="#6e5838"/></linearGradient>
+        <radialGradient id="warm" cx=".5" cy=".3" r=".8"><stop offset="0" stop-color="#ffcf7a"/><stop offset=".45" stop-color="#b86e2a"/><stop offset="1" stop-color="#2a1b10"/></radialGradient>
+        <linearGradient id="coolR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#1b2a4a" stop-opacity="0"/><stop offset="1" stop-color="#1b2a4a" stop-opacity=".62"/></linearGradient>
+        <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9b979" stop-opacity="0"/><stop offset=".5" stop-color="#e9b979" stop-opacity=".16"/><stop offset="1" stop-color="#e9b979" stop-opacity="0"/></linearGradient>
+        <linearGradient id="night" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0a0e1a"/><stop offset=".7" stop-color="#1a2238"/><stop offset="1" stop-color="#3a3036"/></linearGradient>
+        <radialGradient id="bgclose" cx=".45" cy=".4" r=".9"><stop offset="0" stop-color="#3a2c22"/><stop offset="1" stop-color="#101218"/></radialGradient>
+        <filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="5"/></filter>
+        <filter id="soft" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="3"/></filter>
+        <filter id="bok" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+        <marker id="ahA" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${C.amber}"/></marker>
+        <marker id="ahC" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${C.cool}"/></marker>
+        <marker id="ahR" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${C.rust}"/></marker>
+        <marker id="ahI" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="${C.ink}"/></marker>
+      </defs>`;
+
+      function label(x, y, t, o = {}) {
+        const fs = o.fs || 14, w = t.length * fs * 0.62 + 14, col = o.c === C.rust ? "#ee7d60" : o.c || C.ink;
+        return `<g ${o.id ? `id="${o.id}"` : ""} opacity="${o.op ?? 1}"><rect x="${f1(x - w / 2)}" y="${f1(y - fs - 3)}" width="${f1(w)}" height="${fs + 9}" fill="rgba(8,9,11,.8)"/>` +
+          `<text x="${f1(x)}" y="${f1(y)}" text-anchor="middle" font-size="${fs}" font-weight="700" letter-spacing="1.2" fill="${col}">${t}</text>` +
+          (o.u ? `<rect x="${f1(x - w / 2 + 7)}" y="${f1(y + 3)}" width="${f1(w - 14)}" height="2.5" fill="${C.rust}"/>` : "") + `</g>`;
+      }
+      // stick figure (book board language: round head, trapezoid torso, line limbs, nose shows facing)
+      function fig(x, gy, h, o = {}) {
+        const r = h * 0.085, hy = gy - h + r, sh = gy - h * 0.79, hip = gy - h * 0.44;
+        const sw = h * 0.13, hw = h * 0.095, lw = Math.max(1.6, h * 0.03);
+        const limb = o.c || C.crowd, torso = o.jacket || limb, head = o.head || limb;
+        const d = o.face === "l" ? -1 : o.face === "r" ? 1 : 0;
+        let s = `<g ${o.id ? `id="${o.id}"` : ""} opacity="${o.op ?? 1}" ${o.filter ? `filter="url(#${o.filter})"` : ""}>`;
+        s += `<line x1="${f1(x - hw * 0.45)}" y1="${f1(hip)}" x2="${f1(x - hw * 0.75)}" y2="${f1(gy)}" stroke="${limb}" stroke-width="${f1(lw * 1.7)}" stroke-linecap="round"/>`;
+        s += `<line x1="${f1(x + hw * 0.45)}" y1="${f1(hip)}" x2="${f1(x + hw * 0.75)}" y2="${f1(gy)}" stroke="${limb}" stroke-width="${f1(lw * 1.7)}" stroke-linecap="round"/>`;
+        const armL = `<line x1="${f1(x - sw)}" y1="${f1(sh + lw)}" x2="${f1(x - sw - h * 0.05)}" y2="${f1(hip + h * 0.02)}" stroke="${limb}" stroke-width="${f1(lw * 1.3)}" stroke-linecap="round"/>`;
+        const armR = `<line x1="${f1(x + sw)}" y1="${f1(sh + lw)}" x2="${f1(x + sw + h * 0.05)}" y2="${f1(hip + h * 0.02)}" stroke="${limb}" stroke-width="${f1(lw * 1.3)}" stroke-linecap="round"/>`;
+        s += o.armL || armL;
+        s += o.armR || armR;
+        s += `<polygon points="${f1(x - sw)},${f1(sh)} ${f1(x + sw)},${f1(sh)} ${f1(x + hw)},${f1(hip)} ${f1(x - hw)},${f1(hip)}" fill="${torso}"/>`;
+        if (o.stripe) s += `<line x1="${f1(x)}" y1="${f1(sh)}" x2="${f1(x)}" y2="${f1(hip)}" stroke="#dfe6f5" stroke-width="${f1(lw * 0.5)}"/>`;
+        if (o.sari) s += `<line x1="${f1(x - sw)}" y1="${f1(sh)}" x2="${f1(x + hw)}" y2="${f1(hip)}" stroke="${C.rust}" stroke-width="${f1(lw * 1.2)}"/>`;
+        if (o.gamchha) {
+          const p = `M${f1(x - sw * 0.45)} ${f1(sh)} L${f1(x - hw * 0.7)} ${f1(hip - h * 0.06)} M${f1(x + sw * 0.45)} ${f1(sh)} L${f1(x + hw * 0.7)} ${f1(hip - h * 0.06)}`;
+          s += `<path d="${p}" stroke="#f1ece0" stroke-width="${f1(lw * 1.6)}"/><path d="${p}" stroke="${C.rust}" stroke-width="${f1(lw * 1.6)}" stroke-dasharray="${f1(lw * 1.2)} ${f1(lw * 1.2)}"/>`;
+        }
+        s += `<rect x="${f1(x - r * 0.35)}" y="${f1(hy + r * 0.8)}" width="${f1(r * 0.7)}" height="${f1(sh - hy - r * 0.6)}" fill="${head}"/>`;
+        s += `<circle cx="${f1(x)}" cy="${f1(hy)}" r="${f1(r)}" fill="${head}"/>`;
+        if (d) s += `<polygon points="${f1(x + d * r * 0.95)},${f1(hy - r * 0.2)} ${f1(x + d * r * 1.35)},${f1(hy + r * 0.05)} ${f1(x + d * r * 0.95)},${f1(hy + r * 0.3)}" fill="${head}"/>`;
+        if (o.key) s += `<path d="M${f1(x - r * 0.7)} ${f1(hy - r * 0.7)} A${f1(r)} ${f1(r)} 0 0 0 ${f1(x - r * 0.7)} ${f1(hy + r * 0.7)}" fill="none" stroke="${C.amber}" stroke-width="${f1(Math.max(1.5, r * 0.18))}" opacity=".9"/>`;
+        if (o.ring) s += `<circle cx="${f1(x)}" cy="${f1(hy)}" r="${f1(r * 1.55)}" fill="none" stroke="${C.rust}" stroke-width="2.5"/>`;
+        if (o.label) s += label(x, gy + 24, o.label, { u: true, fs: o.lfs || 14 });
+        return s + `</g>`;
+      }
+      // head + shoulders for close-ups
+      function bust(x, by, s, o = {}) {
+        const col = o.c || C.dark, head = o.head || col, bot = H + 40;
+        const hr = s * 0.42, hy = by - s * 0.98, d = o.face === "l" ? -1 : o.face === "r" ? 1 : 0;
+        let g = `<g ${o.id ? `id="${o.id}"` : ""} opacity="${o.op ?? 1}" ${o.filter ? `filter="url(#${o.filter})"` : ""}>`;
+        g += `<path d="M${f1(x - s * 1.05)} ${bot} L${f1(x - s * 0.92)} ${f1(by - s * 0.02)} Q${f1(x - s * 0.85)} ${f1(by - s * 0.3)} ${f1(x - s * 0.3)} ${f1(by - s * 0.36)} L${f1(x + s * 0.3)} ${f1(by - s * 0.36)} Q${f1(x + s * 0.85)} ${f1(by - s * 0.3)} ${f1(x + s * 0.92)} ${f1(by - s * 0.02)} L${f1(x + s * 1.05)} ${bot} Z" fill="${col}"/>`;
+        if (o.jacket) {
+          g += `<path d="M${f1(x - s * 0.28)} ${f1(by - s * 0.36)} L${f1(x)} ${f1(by + s * 0.05)} L${f1(x + s * 0.28)} ${f1(by - s * 0.36)}" fill="none" stroke="#dfe6f5" stroke-width="${f1(s * 0.03)}"/>`;
+          g += `<line x1="${f1(x)}" y1="${f1(by + s * 0.05)}" x2="${f1(x)}" y2="${bot}" stroke="#c9cfdb" stroke-width="${f1(s * 0.02)}"/>`;
+          g += `<path d="M${f1(x - s * 0.62)} ${f1(by - s * 0.33)} L${f1(x - s * 0.98)} ${bot}" stroke="#dfe6f5" stroke-width="${f1(s * 0.035)}"/><path d="M${f1(x + s * 0.62)} ${f1(by - s * 0.33)} L${f1(x + s * 0.98)} ${bot}" stroke="#dfe6f5" stroke-width="${f1(s * 0.035)}"/>`;
+        }
+        if (o.sari) g += `<path d="M${f1(x - s * 0.34)} ${f1(by - s * 0.34)} L${f1(x + s * 0.72)} ${bot}" stroke="${C.rust}" stroke-width="${f1(s * 0.07)}"/>`;
+        if (o.gamchha) {
+          const p = `M${f1(x - s * 0.3)} ${f1(by - s * 0.36)} L${f1(x - s * 0.42)} ${bot} M${f1(x + s * 0.3)} ${f1(by - s * 0.36)} L${f1(x + s * 0.42)} ${bot}`;
+          g += `<path d="${p}" stroke="#f1ece0" stroke-width="${f1(s * 0.09)}"/><path d="${p}" stroke="${C.rust}" stroke-width="${f1(s * 0.09)}" stroke-dasharray="${f1(s * 0.06)} ${f1(s * 0.06)}"/>`;
+        }
+        g += `<rect x="${f1(x - hr * 0.42)}" y="${f1(hy + hr * 0.6)}" width="${f1(hr * 0.84)}" height="${f1(by - s * 0.3 - hy - hr * 0.5)}" fill="${head}"/>`;
+        g += `<circle cx="${f1(x)}" cy="${f1(hy)}" r="${f1(hr)}" fill="${head}"/>`;
+        if (d) g += `<polygon points="${f1(x + d * hr * 0.96)},${f1(hy - hr * 0.1)} ${f1(x + d * hr * 1.22)},${f1(hy + hr * 0.12)} ${f1(x + d * hr * 0.96)},${f1(hy + hr * 0.3)}" fill="${head}"/>`;
+        if (o.eye) g += `<rect x="${f1(x + d * hr * 0.45 - hr * 0.14)}" y="${f1(hy - hr * 0.2)}" width="${f1(hr * 0.28)}" height="${f1(hr * 0.06)}" fill="#1a1d24"/>`;
+        if (o.specs) g += `<rect x="${f1(x + d * hr * 0.45 - hr * 0.22)}" y="${f1(hy - hr * 0.32)}" width="${f1(hr * 0.44)}" height="${f1(hr * 0.28)}" rx="${f1(hr * 0.05)}" fill="none" stroke="#1a1d24" stroke-width="${f1(hr * 0.045)}"/>`;
+        if (o.sweat) g += `<g class="sweat">` + [0, 1, 2].map((i) => `<ellipse cx="${f1(x - d * hr * (0.35 + i * 0.18))}" cy="${f1(hy - hr * (0.55 - i * 0.28))}" rx="${f1(hr * 0.05)}" ry="${f1(hr * 0.08)}" fill="#cfe0ff" opacity=".9"/>`).join("") + `</g>`;
+        if (o.key) g += `<path d="M${f1(x - hr * 0.62)} ${f1(hy - hr * 0.78)} A${f1(hr)} ${f1(hr)} 0 0 0 ${f1(x - hr * 0.62)} ${f1(hy + hr * 0.78)}" fill="none" stroke="${C.amber}" stroke-width="${f1(hr * 0.1)}" opacity=".95"/>`;
+        if (o.fill) g += `<path d="M${f1(x + hr * 0.62)} ${f1(hy - hr * 0.78)} A${f1(hr)} ${f1(hr)} 0 0 1 ${f1(x + hr * 0.62)} ${f1(hy + hr * 0.78)}" fill="none" stroke="${C.cool}" stroke-width="${f1(hr * 0.06)}" opacity=".8"/>`;
+        if (o.ring) g += `<circle cx="${f1(x)}" cy="${f1(hy)}" r="${f1(hr * 1.28)}" fill="none" stroke="${C.rust}" stroke-width="3"/>`;
+        return g + `</g>`;
+      }
+      function stall(x, y, w, h, roof, o = {}) {
+        let s = `<g opacity="${o.op ?? 1}">`;
+        s += `<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" fill="#1b1916"/>`;
+        s += `<rect x="${f1(x + w * 0.07)}" y="${f1(y + h * 0.1)}" width="${f1(w * 0.86)}" height="${f1(h * 0.52)}" fill="url(#warm)" opacity="${o.lit ?? 0.9}"/>`;
+        s += `<rect x="${f1(x - w * 0.02)}" y="${f1(y + h * 0.62)}" width="${f1(w * 1.04)}" height="${f1(h * 0.1)}" fill="#8b9098"/>`;
+        s += `<polygon points="${f1(x - w * 0.08)},${f1(y + h * 0.02)} ${f1(x + w * 1.08)},${f1(y + h * 0.02)} ${f1(x + w * 0.95)},${f1(y - h * 0.16)} ${f1(x + w * 0.05)},${f1(y - h * 0.16)}" fill="${roof}"/>`;
+        s += `<circle class="bulb" cx="${f1(x + w / 2)}" cy="${f1(y + h * 0.12)}" r="${f1(Math.max(2, w * 0.025))}" fill="#ffe2a6"/>`;
+        return s + `</g>`;
+      }
+      function bulbs(x1, y1, x2, y2, n, sag, r = 4, cls = "bulb") {
+        const cx = (x1 + x2) / 2, cy = (y1 + y2) / 2 + sag;
+        let s = `<path d="M${x1} ${y1} Q${cx} ${cy} ${x2} ${y2}" fill="none" stroke="#2a2522" stroke-width="1.5"/>`;
+        for (let i = 1; i < n; i++) {
+          const t = i / n, x = (1 - t) ** 2 * x1 + 2 * (1 - t) * t * cx + t * t * x2, y = (1 - t) ** 2 * y1 + 2 * (1 - t) * t * cy + t * t * y2;
+          s += `<circle cx="${f1(x)}" cy="${f1(y + r)}" r="${f1(r * 2.6)}" fill="${C.amber}" opacity=".28" filter="url(#glow)"/><circle class="${cls}" cx="${f1(x)}" cy="${f1(y + r)}" r="${r}" fill="#ffe2a6"/>`;
+        }
+        return s;
+      }
+      function wires(y0, n, rnd) {
+        let s = "";
+        for (let i = 0; i < n; i++) {
+          const a = y0 + rnd() * 60, b = y0 + rnd() * 90, m = a + 30 + rnd() * 50;
+          s += `<path d="M-20 ${f1(a)} Q${f1(300 + rnd() * 600)} ${f1(m)} ${W + 20} ${f1(b)}" fill="none" stroke="#0b0c0e" stroke-width="${f1(1.5 + rnd() * 1.5)}"/>`;
+        }
+        return s;
+      }
+      function ferris(cx, cy, r, op = 0.8) {
+        let s = `<g opacity="${op}"><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#caa56b" stroke-width="2.5"/>`;
+        for (let i = 0; i < 12; i++) {
+          const a = (i / 12) * Math.PI * 2, x = cx + Math.cos(a) * r, y = cy + Math.sin(a) * r;
+          s += `<line x1="${cx}" y1="${cy}" x2="${f1(x)}" y2="${f1(y)}" stroke="#caa56b" stroke-width="1" opacity=".6"/><circle class="bulb" cx="${f1(x)}" cy="${f1(y)}" r="3" fill="#ffd894"/>`;
+        }
+        return s + `<line x1="${cx}" y1="${cy}" x2="${cx - r * 0.5}" y2="${cy + r * 1.35}" stroke="#caa56b" stroke-width="2"/><line x1="${cx}" y1="${cy}" x2="${cx + r * 0.5}" y2="${cy + r * 1.35}" stroke="#caa56b" stroke-width="2"/></g>`;
+      }
+      function arrow(x1, y1, x2, y2, col, mk, t, o = {}) {
+        const dash = o.dash ? `stroke-dasharray="${o.dash}"` : "";
+        let s = `<g ${o.id ? `id="${o.id}"` : ""} opacity="${o.op ?? 1}"><line class="draw" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="${o.w || 3}" ${dash} marker-end="url(#${mk})"/>`;
+        if (t) s += label(o.tx ?? x1, o.ty ?? y1 - 10, t, { c: col, fs: o.fs || 13 });
+        return s + `</g>`;
+      }
+      function lane(hz, vx, spread = 40) {
+        return `<rect x="0" y="${hz}" width="${W}" height="${H - hz}" fill="#221c16"/><polygon points="${vx - spread},${hz} ${vx + spread},${hz} ${W + 260},${H} ${-260},${H}" fill="url(#dust)"/>`;
+      }
+      function balloonBunch(cx, cy, s, rnd, withRed = true, id = "") {
+        const cols = ["#c9a23a", "#3f6fb0", "#4f8a55", "#c9763a", "#8a4fa0", "#d6c16a", "#3f9aa8"];
+        let g = `<g ${id ? `id="${id}"` : ""}>`;
+        const pts = [];
+        for (let i = 0; i < 13; i++) {
+          const a = rnd() * Math.PI * 2, d = Math.sqrt(rnd()) * s * 1.1;
+          pts.push([cx + Math.cos(a) * d, cy + Math.sin(a) * d * 0.8, s * (0.32 + rnd() * 0.14), cols[i % cols.length]]);
+        }
+        for (const p of pts) g += `<line x1="${f1(p[0])}" y1="${f1(p[1] + p[2])}" x2="${cx}" y2="${f1(cy + s * 2)}" stroke="#cfc3a8" stroke-width="1" opacity=".6"/>`;
+        for (const p of pts) g += `<ellipse cx="${f1(p[0])}" cy="${f1(p[1])}" rx="${f1(p[2])}" ry="${f1(p[2] * 1.12)}" fill="${p[3]}"/><ellipse cx="${f1(p[0] - p[2] * 0.35)}" cy="${f1(p[1] - p[2] * 0.4)}" rx="${f1(p[2] * 0.18)}" ry="${f1(p[2] * 0.26)}" fill="#fff" opacity=".35"/>`;
+        if (withRed) g += `<line x1="${cx}" y1="${f1(cy - s * 1.1 + s * 0.55)}" x2="${cx}" y2="${f1(cy + s * 2)}" stroke="#cfc3a8" stroke-width="1"/><ellipse cx="${cx}" cy="${f1(cy - s * 1.1)}" rx="${f1(s * 0.5)}" ry="${f1(s * 0.56)}" fill="#d33a2c"/><ellipse cx="${f1(cx - s * 0.18)}" cy="${f1(cy - s * 1.28)}" rx="${f1(s * 0.1)}" ry="${f1(s * 0.16)}" fill="#fff" opacity=".45"/>`;
+        return g + `</g>`;
+      }
+      function crowd(rnd, n, x0, x1, gy0, gy1, h0, h1, o = {}) {
+        let s = "";
+        for (let i = 0; i < n; i++) {
+          const t = rnd(), gy = gy0 + (gy1 - gy0) * t, h = (h0 + (h1 - h0) * t) * (0.88 + rnd() * 0.22);
+          const x = x0 + rnd() * (x1 - x0), face = rnd() < 0.5 ? "l" : "r";
+          s += fig(x, gy, h, { c: t < 0.4 ? C.crowdFar : C.crowd, face, op: o.op ?? 0.95 });
+        }
+        return s;
+      }
+      const svg = (inner) => `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${defs}${inner}</svg>`;
+
+      // ---------- panels ----------
+      const scenes = {};
+      scenes.s1a = () => {
+        const r = prng(11), hz = 205;
+        let s = `<rect width="${W}" height="${H}" fill="url(#dusk)"/>`;
+        for (let x = -10; x < W; ) {
+          const w = 30 + r() * 70, h = 20 + r() * 55;
+          s += `<rect x="${f1(x)}" y="${f1(hz - h)}" width="${f1(w)}" height="${f1(h + 6)}" fill="#151b28"/>`;
+          if (r() < 0.6) s += `<rect x="${f1(x + w * 0.3)}" y="${f1(hz - h * 0.6)}" width="5" height="6" fill="${C.amber}" opacity=".7"/>`;
+          x += w + 4;
+        }
+        s += `<rect x="672" y="58" width="40" height="150" fill="#1d2233"/><polygon points="668,58 716,58 692,24" fill="#1d2233"/><circle cx="692" cy="84" r="11" fill="${C.amber}" opacity=".85"/>`;
+        s += ferris(880, 140, 62);
+        s += `<rect x="0" y="${hz}" width="${W}" height="${H - hz}" fill="#241d16"/><polygon points="548,${hz} 668,${hz} 1130,${H} 90,${H}" fill="url(#dust)"/>`;
+        const roofs = ["#2f5d8a", "#8a3b2e", "#9a7a3a"];
+        for (let i = 0; i < 12; i++) {
+          const t = (i + 1) / 12, t2 = t * t;
+          const y = hz + (H - hz) * t2, w = 18 + 150 * t2, h = 12 + 95 * t2;
+          const lx = 548 + (90 - 548) * t2, rx = 668 + (1130 - 668) * t2;
+          s += stall(lx - w - 8, y - h, w, h, roofs[i % 3]);
+          s += stall(rx + 8, y - h, w, h, roofs[(i + 1) % 3]);
+        }
+        s += `<g id="s1a-crowd">`;
+        for (let i = 0; i < 190; i++) {
+          const t = Math.pow(r(), 0.75), y = hz + 6 + (H - hz) * t * t;
+          const lx = 548 + (90 - 548) * t * t, rx = 668 + (1130 - 668) * t * t;
+          s += fig(lx + 10 + r() * (rx - lx - 20), y, 9 + 64 * t * t, { c: t < 0.5 ? C.crowdFar : C.crowd, face: r() < 0.5 ? "l" : "r" });
+        }
+        s += `</g>`;
+        for (const t of [0.2, 0.38, 0.6, 0.85]) {
+          const y = hz + (H - hz) * t * t;
+          s += bulbs(548 + (90 - 548) * t * t - 40, y - 40 - 90 * t, 668 + (1130 - 668) * t * t + 40, y - 40 - 90 * t, 14, 20 + 30 * t, 2 + 3 * t);
+        }
+        s += `<rect x="0" y="150" width="${W}" height="200" fill="url(#haze)"/>`;
+        s += `<line x1="58" y1="0" x2="72" y2="${H}" stroke="#0a0b0d" stroke-width="12"/><line x1="1170" y1="0" x2="1160" y2="${H}" stroke="#0a0b0d" stroke-width="10"/>` + wires(0, 4, r);
+        s += arrow(880, 250, 930, 330, C.cool, "ahC", "DUSK AMBIENT 6000–6500K", { tx: 820, ty: 240, id: "s1a-l1" });
+        s += arrow(300, 250, 330, 360, C.amber, "ahA", "STALL PRACTICALS 3000K", { tx: 250, ty: 238, id: "s1a-l2" });
+        s += label(608, 560, "CROWD DENSITY — LAYERED STALLS + OVERHEAD WIRING", { c: "#b9b3a8", fs: 12 });
+        s += `<g id="s1a-h00" opacity="0"><rect x="40" y="590" width="300" height="62" fill="#d0583c"/><text x="58" y="630" font-size="30" font-weight="800" fill="#0c0d0f" letter-spacing="2">GHANTA 00 · 19:00</text></g>` + label(190, 580, "[POST] H00 CLOCK COMPOSITE", { c: C.rust, fs: 11 });
+        return svg(s);
+      };
+      scenes.s1b = () => {
+        const r = prng(21), hz = 300, vx = 640;
+        let s = `<rect width="${W}" height="${hz}" fill="url(#dusk)"/>` + ferris(760, 240, 44, 0.6) + lane(hz, vx);
+        s += stall(420, 270, 90, 82, "#9a7a3a") + stall(250, 245, 150, 175, "#2f5d8a") + stall(-30, 170, 250, 430, "#8a3b2e");
+        s += stall(720, 272, 88, 80, "#8a3b2e") + stall(830, 245, 150, 175, "#9a7a3a") + stall(1000, 168, 240, 432, "#2f5d8a");
+        s += `<rect x="0" y="240" width="${W}" height="140" fill="url(#haze)"/>`;
+        s += `<g id="s1b-mid">` + crowd(r, 22, 300, 960, 360, 470, 90, 210) + `</g>`;
+        s += wires(0, 6, r) + bulbs(-20, 60, 1240, 70, 22, 50, 4) + bulbs(-20, 150, 1240, 140, 18, 40, 3);
+        s += fig(170, 820, 640, { c: "#0d0f13", face: "r", id: "s1b-fg1" }) + fig(1100, 800, 600, { c: "#0d0f13", face: "l", id: "s1b-fg2" });
+        s += arrow(190, 210, 420, 330, C.amber, "ahA", "KEY 3000K · STALL BULB · CAM-LEFT", { tx: 220, ty: 196 });
+        s += arrow(1120, 230, 960, 300, C.cool, "ahC", "FILL 6500K DUSK · ~4:1", { tx: 1060, ty: 222 });
+        s += label(608, 520, "FOREGROUND OCCLUSION SELLS DENSITY — NO AERIAL", { c: "#b9b3a8", fs: 12 });
+        return svg(s);
+      };
+      scenes.s2a = () => {
+        const r = prng(41), hz = 300, vx = 600;
+        let s = `<rect width="${W}" height="${hz}" fill="url(#dusk)"/>` + ferris(840, 225, 50, 0.6) + lane(hz, vx, 30);
+        s += stall(380, 275, 70, 60, "#2f5d8a") + stall(200, 250, 140, 130, "#9a7a3a") + stall(-40, 205, 200, 260, "#8a3b2e");
+        s += stall(760, 275, 70, 60, "#9a7a3a") + stall(870, 250, 140, 130, "#8a3b2e") + stall(1050, 205, 200, 260, "#2f5d8a");
+        s += `<rect x="0" y="250" width="${W}" height="130" fill="url(#haze)"/>`;
+        s += crowd(r, 26, 180, 1080, 330, 450, 60, 160);
+        s += wires(0, 5, r) + bulbs(-20, 70, 1240, 80, 22, 50, 4) + bulbs(-20, 170, 1240, 165, 18, 30, 3);
+        s += `<g id="s2a-fam">`;
+        s += fig(408, 540, 250, { c: C.skin, jacket: C.father, face: "r", ring: true, label: "FATHER", key: true });
+        s += fig(470, 540, 160, { c: C.skin, jacket: C.blue, face: "r", ring: true, label: "DHRUV", stripe: true, key: true });
+        s += fig(530, 540, 200, { c: C.skin, jacket: C.sister, face: "l", label: "SISTER", key: true });
+        s += fig(596, 540, 240, { c: C.skin, jacket: C.mother, face: "l", ring: true, label: "MOTHER", sari: true, key: true });
+        s += `</g>`;
+        s += crowd(r, 6, 700, 1000, 470, 520, 190, 240);
+        s += `<g id="s2a-fg">` + fig(80, 900, 700, { c: "#0d0f13", face: "l" }) + fig(820, 930, 720, { c: "#0d0f13", face: "l" }) + fig(1320, 900, 700, { c: "#0d0f13", face: "l" }) + `</g>`;
+        s += arrow(160, 200, 370, 390, C.amber, "ahA", "KEY 3000K · CAM-LEFT", { tx: 170, ty: 190 });
+        s += arrow(840, 640, 560, 640, C.ink, "ahI", "CAMERA: SLOW LATERAL DRIFT", { tx: 700, ty: 628, dash: "12 8", w: 2.5 });
+        return svg(s);
+      };
+      scenes.s2b = () => {
+        const r = prng(51), hz = 330, vx = 620;
+        let s = `<rect width="${W}" height="${hz}" fill="url(#dusk)"/><g filter="url(#soft)">` + ferris(700, 250, 60, 0.55) + lane(hz, vx, 30);
+        s += stall(-20, 170, 260, 330, "#8a3b2e") + stall(260, 250, 150, 140, "#9a7a3a") + stall(830, 250, 150, 140, "#2f5d8a") + stall(990, 170, 260, 330, "#9a7a3a");
+        s += crowd(r, 18, 250, 1000, 360, 440, 90, 170) + bulbs(-20, 90, 1240, 100, 20, 40, 5) + `</g>`;
+        s += `<g id="s2b-fam">`;
+        s += fig(300, 930, 830, { c: C.skin, jacket: C.father, face: "r", key: true });
+        s += `<g id="s2b-dhruv">` + fig(525, 930, 560, { c: C.skin, jacket: C.blue, face: "r", stripe: true, key: true, ring: true }) + `</g>`;
+        s += fig(720, 930, 640, { c: C.skin, jacket: C.sister, face: "l", key: true });
+        s += fig(930, 930, 790, { c: C.skin, jacket: C.mother, face: "l", sari: true, key: true });
+        s += `</g>`;
+        s += label(300, 520, "FATHER", { u: true }) + label(525, 560, "DHRUV", { u: true }) + label(720, 540, "SISTER", { u: true }) + label(930, 520, "MOTHER", { u: true });
+        s += arrow(100, 150, 230, 230, C.amber, "ahA", "KEY 3000K", { tx: 110, ty: 140 });
+        s += arrow(1150, 150, 1020, 230, C.cool, "ahC", "FILL 6500K", { tx: 1130, ty: 140 });
+        s += arrow(608, 640, 608, 675, C.ink, "ahI", "DOLLY BACK · MATCH THEIR WALK", { tx: 608, ty: 630, w: 2.5 });
+        return svg(s);
+      };
+      scenes.s2c = () => {
+        const r = prng(61);
+        let s = `<rect width="${W}" height="${H}" fill="url(#bgclose)"/><g filter="url(#bok)">`;
+        for (let i = 0; i < 28; i++) s += `<circle class="bok" cx="${f1(r() * W)}" cy="${f1(r() * 420)}" r="${f1(12 + r() * 30)}" fill="${r() < 0.75 ? C.amber : C.cool}" opacity="${f1(0.15 + r() * 0.35)}"/>`;
+        s += `</g>`;
+        s += bust(960, 560, 230, { c: C.sister, head: C.skin, face: "l", filter: "soft", op: 0.55 });
+        s += bust(1230, 540, 260, { c: C.mother, head: C.skin, face: "l", filter: "soft", op: 0.4 });
+        s += `<g id="s2c-dhruv">` + bust(520, 520, 270, { c: C.blue, head: C.skin, jacket: true, face: "r", eye: true, key: true, fill: true, ring: true }) + `</g>`;
+        s += arrow(110, 120, 330, 220, C.amber, "ahA", "KEY 3000K ON CHEEK", { tx: 140, ty: 110 });
+        s += arrow(1000, 280, 720, 230, C.cool, "ahC", "COOL CHEEK FILL", { tx: 1000, ty: 270 });
+        s += label(520, 600, "DHRUV · 8 · BLUE JACKET (LOCKED PROP)", { u: true, fs: 15 });
+        s += label(960, 330, "SISTER — SOFT", { c: "#b9b3a8", fs: 12 });
+        return svg(s);
+      };
+      scenes.s3a = () => {
+        const r = prng(71), hz = 420, vx = 700;
+        let s = `<rect width="${W}" height="${hz}" fill="url(#dusk)"/>` + ferris(860, 330, 55, 0.55) + lane(hz, vx, 40);
+        s += stall(760, 360, 110, 100, "#2f5d8a") + stall(900, 320, 190, 200, "#8a3b2e");
+        s += crowd(r, 12, 600, 1100, 440, 520, 100, 180);
+        s += wires(0, 5, r) + bulbs(-20, 60, 1240, 80, 20, 40, 5);
+        s += `<rect x="-20" y="300" width="360" height="330" fill="#1b1916"/><rect x="0" y="320" width="320" height="170" fill="url(#warm)"/><rect x="-30" y="480" width="380" height="36" fill="#9aa0a8"/>`;
+        for (let i = 0; i < 5; i++) s += `<ellipse cx="${40 + i * 60}" cy="474" rx="24" ry="8" fill="#e08a2c"/>`;
+        s += label(110, 300, "JALEBI COUNTER", { c: "#b9b3a8", fs: 12 });
+        s += fig(830, 600, 300, { c: C.skin, jacket: C.mother, face: "l", sari: true, label: "MOTHER" }) + fig(900, 600, 250, { c: C.skin, jacket: C.sister, face: "l", label: "SISTER" });
+        s += `<g id="s3a-bal">` + balloonBunch(1150, 130, 110, r, true) + `</g>`;
+        s += fig(330, 1080, 1180, { c: C.skin, jacket: C.father, face: "l", key: true });
+        s += label(330, 560, "FATHER — ADULT EDGE (HEAD OUT OF FRAME)", { c: C.ink, fs: 12 });
+        const x = 590, gy = 700, h = 440, sh = gy - h * 0.79;
+        const tug = `<g id="s3a-tug"><line x1="${x - 57}" y1="${sh + 13}" x2="${x - 170}" y2="${sh + 90}" stroke="${C.skin}" stroke-width="17" stroke-linecap="round"/></g>`;
+        const point = `<line x1="${x + 57}" y1="${sh + 13}" x2="${x + 150}" y2="${sh - 80}" stroke="${C.skin}" stroke-width="17" stroke-linecap="round"/>`;
+        s += fig(x, gy, h, { c: C.skin, jacket: C.blue, face: "r", stripe: true, key: true, ring: true, label: "DHRUV", armL: tug, armR: point });
+        s += arrow(630, 290, 1060, 175, C.rust, "ahR", "EYE-LINE → BALLOONS", { tx: 850, ty: 215, dash: "10 8", w: 2.5, id: "s3a-eye" });
+        s += arrow(90, 170, 250, 280, C.amber, "ahA", "KEY 3000K · COUNTER BULB", { tx: 150, ty: 160 });
+        return svg(s);
+      };
+      scenes.s3b = () => {
+        const r = prng(81);
+        let s = `<rect width="${W}" height="${H}" fill="url(#bgclose)"/><g filter="url(#bok)">`;
+        for (let i = 0; i < 26; i++) s += `<circle class="bok" cx="${f1(r() * W)}" cy="${f1(r() * 330)}" r="${f1(12 + r() * 30)}" fill="${r() < 0.8 ? C.amber : C.cool}" opacity="${f1(0.15 + r() * 0.35)}"/>`;
+        s += `</g>`;
+        s += bust(-110, 600, 420, { c: "#39404f", face: "l" }) + bust(1330, 590, 430, { c: "#39404f", face: "r" });
+        s += label(120, 640, "ADULT EDGE — TURNED AWAY", { c: "#b9b3a8", fs: 12 }) + label(1090, 640, "ADULT EDGE — TURNED AWAY", { c: "#b9b3a8", fs: 12 });
+        s += `<g id="s3b-dhruv">` + bust(610, 540, 250, { c: C.blue, head: C.skin, jacket: true, face: "r", eye: true, key: true, fill: true, ring: true }) + `</g>`;
+        const ex = 660, ey = 330;
+        s += `<g id="s3b-eye"><line x1="${ex}" y1="${ey}" x2="${ex + 300}" y2="${ey}" stroke="${C.rust}" stroke-width="3" stroke-dasharray="10 8" marker-end="url(#ahR)"/></g>`;
+        s += label(250, 120, "EYE-LINE 1 → PARENTS (IGNORED)", { c: C.rust, fs: 13, id: "s3b-l1" });
+        s += label(960, 330, "EYE-LINE 2 → BALLOONS", { c: C.rust, fs: 13, id: "s3b-l2", op: 0 });
+        s += arrow(150, 250, 380, 260, C.amber, "ahA", "KEY 3000K", { tx: 170, ty: 240 });
+        return svg(s);
+      };
+      scenes.s3c = () => {
+        const r = prng(91), hz = 400, vx = 760;
+        let s = `<rect width="${W}" height="${hz}" fill="url(#dusk)"/>` + ferris(900, 300, 60, 0.55) + lane(hz, vx, 40);
+        s += stall(-30, 250, 380, 330, "#9a7a3a") + stall(560, 360, 90, 70, "#2f5d8a");
+        s += stall(880, 340, 130, 110, "#8a3b2e", { lit: 0.6 }) + stall(1040, 290, 220, 230, "#2f5d8a", { lit: 0.5 });
+        s += balloonBunch(950, 262, 40, r, true);
+        s += crowd(r, 14, 450, 1100, 420, 520, 90, 170);
+        s += wires(0, 5, r) + bulbs(-20, 70, 700, 120, 12, 40, 5);
+        s += `<rect x="560" y="0" width="${W - 560}" height="${H}" fill="url(#coolR)"/>`;
+        s += fig(150, 650, 420, { c: C.skin, jacket: C.father, face: "l", label: "FATHER" }) + fig(250, 650, 390, { c: C.skin, jacket: C.mother, face: "l", sari: true, label: "MOTHER" }) + fig(335, 650, 320, { c: C.skin, jacket: C.sister, face: "l", label: "SISTER" });
+        s += `<g id="s3c-dhruv">` + fig(520, 650, 250, { c: C.skin, jacket: C.blue, face: "r", stripe: true, ring: true, label: "DHRUV" }) + `</g>`;
+        s += `<g id="s3c-gap" opacity="0"><ellipse cx="520" cy="540" rx="70" ry="125" fill="none" stroke="${C.rust}" stroke-width="3" stroke-dasharray="10 8"/>` + label(520, 400, "EMPTY CHILD-HEIGHT SPACE — HOLD", { c: C.rust, fs: 13 }) + `</g>`;
+        s += fig(1400, 1060, 900, { c: "#0d0f13", face: "l", id: "s3c-pass" });
+        s += arrow(600, 470, 1150, 470, C.rust, "ahR", "BLUE EXITS FRAME-RIGHT", { tx: 880, ty: 456, dash: "12 8", w: 2.5, id: "s3c-exit" });
+        s += arrow(60, 170, 200, 260, C.amber, "ahA", "WARM BULBS", { tx: 90, ty: 160 });
+        s += label(1080, 200, "LANE FALLS INTO COOL SHADOW", { c: C.cool, fs: 12 });
+        return svg(s);
+      };
+
+      // ---------- SEQ 4-6 helpers ----------
+      const bokeh = (r, n, maxY) => {
+        let s = `<g filter="url(#bok)">`;
+        for (let i = 0; i < n; i++) s += `<circle cx="${f1(r() * W)}" cy="${f1(r() * maxY)}" r="${f1(12 + r() * 30)}" fill="${r() < 0.78 ? C.amber : C.cool}" opacity="${f1(0.14 + r() * 0.32)}"/>`;
+        return s + `</g>`;
+      };
+      function star(cx, cy, rr, o = {}) {
+        let p = "";
+        for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + (i * Math.PI) / 5, k = i % 2 ? rr * 0.45 : rr; p += `${f1(cx + Math.cos(a) * k)},${f1(cy + Math.sin(a) * k)} `; }
+        return `<polygon class="${o.cls || ""}" points="${p}" fill="${o.fill || "#6e5c3a"}" stroke="${o.stroke || "#d9c79a"}" stroke-width="${o.sw || 2}"/>`;
+      }
+      // rank ladder (post composite): rails + n rungs, rung i=0 at the bottom
+      function ladder(x, y0, y1, w, n, o = {}) {
+        const col = o.c || "#caa56b", step = (y1 - y0) / n;
+        let s = `<g ${o.id ? `id="${o.id}"` : ""}><line x1="${x}" y1="${y0}" x2="${x}" y2="${y1}" stroke="${col}" stroke-width="5"/><line x1="${x + w}" y1="${y0}" x2="${x + w}" y2="${y1}" stroke="${col}" stroke-width="5"/>`;
+        for (let i = 0; i < n; i++) s += `<line class="rung" x1="${x}" y1="${f1(y1 - (i + 0.5) * step)}" x2="${x + w}" y2="${f1(y1 - (i + 0.5) * step)}" stroke="${col}" stroke-width="4"/>`;
+        return s + `</g>`;
+      }
+      const rungY = (y0, y1, n, i) => f1(y1 - (i + 0.5) * ((y1 - y0) / n));
+      // narrator set: textured charcoal wall, warm key from left, one cool practical
+      function nset(r) {
+        let s = `<rect width="${W}" height="${H}" fill="#15161a"/>`;
+        for (let i = 0; i < 10; i++) s += `<rect x="${f1(i * 128 - 20 + r() * 30)}" y="0" width="${f1(50 + r() * 60)}" height="${H}" fill="#1c1d22" opacity=".85"/>`;
+        s += `<rect width="${W}" height="${H}" fill="url(#coolR)" opacity=".45"/><rect x="0" y="${H - 70}" width="${W}" height="70" fill="#101114"/>`;
+        s += `<circle cx="1150" cy="330" r="70" fill="${C.cool}" opacity=".2" filter="url(#bok)"/><circle cx="1150" cy="330" r="9" fill="#cfe0ff" opacity=".85"/>`;
+        return s;
+      }
+      const hostDesk = (x, gy, h) =>
+        fig(x, gy, h, { c: C.skin, jacket: C.host, key: true }) +
+        `<rect x="${x - 190}" y="${f1(gy - h * 0.44)}" width="380" height="24" fill="#3a2f24"/><rect x="${x - 170}" y="${f1(gy - h * 0.44 + 24)}" width="340" height="${H}" fill="#231d17"/>`;
+
+      // ---------- SEQ 4 · THE SEARCH ----------
+      scenes.s4a = () => {
+        const r = prng(101);
+        let s = `<rect width="${W}" height="${H}" fill="url(#bgclose)"/>` + bokeh(r, 26, 380);
+        s += `<g filter="url(#soft)" opacity=".75">` + stall(-40, 250, 330, 260, "#9a7a3a") + crowd(r, 9, 320, 900, 470, 520, 190, 250) + `</g>`;
+        s += fig(170, 1180, 1000, { c: C.skin, jacket: C.father, face: "r", key: true });
+        s += fig(1040, 1180, 960, { c: C.skin, jacket: C.mother, face: "l", sari: true, key: true, ring: true });
+        s += label(170, 660, "FATHER — FRAME EDGE", { c: C.ink, fs: 12 }) + label(1040, 660, "MOTHER — SEARCHING PAST CAMERA", { c: C.ink, fs: 12 });
+        s += `<g id="s4a-gap" opacity="0"><ellipse cx="600" cy="560" rx="85" ry="140" fill="none" stroke="${C.rust}" stroke-width="3" stroke-dasharray="10 8"/>` + label(600, 400, "EMPTY CHILD-HEIGHT SPACE", { c: C.rust, fs: 13 }) + `</g>`;
+        s += arrow(955, 300, 760, 420, C.rust, "ahR", "EYE-LINE PAST LENS", { tx: 860, ty: 290, dash: "10 8", w: 2.5, id: "s4a-eye", op: 0 });
+        s += arrow(60, 110, 150, 200, C.amber, "ahA", "KEY 3000K", { tx: 80, ty: 100 });
+        s += `<g id="s4a-h10" opacity="0"><rect x="430" y="150" width="300" height="52" fill="#d0583c"/><text x="446" y="186" font-size="25" font-weight="800" fill="#0c0d0f" letter-spacing="2">GHANTA 00 · 19:10</text></g>`;
+        s += label(580, 142, "[POST] +10 MIN CLOCK", { c: C.rust, fs: 11 });
+        return svg(s);
+      };
+      scenes.s4b = () => {
+        const r = prng(111);
+        let s = `<rect width="${W}" height="${H}" fill="url(#bgclose)"/>` + bokeh(r, 22, 420);
+        s += `<g filter="url(#soft)" opacity=".8"><circle cx="1000" cy="230" r="150" fill="none" stroke="#d2a86a" stroke-width="6"/>` + stall(930, 420, 260, 200, "#8a3b2e") + `</g>`;
+        s += label(780, 110, "JHOOLA — BOKEH", { c: "#b9b3a8", fs: 12 }) + label(1060, 645, "DUKAAN — SOFT", { c: "#b9b3a8", fs: 12 });
+        s += bust(400, 560, 260, { c: C.mother, head: C.skin, face: "r", sari: true, eye: true, key: true, fill: true, ring: true });
+        s += arrow(520, 300, 860, 220, C.rust, "ahR", "JHOOLA?", { tx: 700, ty: 236, dash: "10 8", w: 2.5, id: "s4b-e1", op: 0 });
+        s += arrow(520, 330, 900, 470, C.rust, "ahR", "DUKAAN?", { tx: 720, ty: 440, dash: "10 8", w: 2.5, id: "s4b-e2", op: 0 });
+        s += arrow(90, 120, 300, 240, C.amber, "ahA", "KEY 3000K ON HER EYES", { tx: 150, ty: 110 });
+        s += label(400, 660, "MOTHER · WORRY, NOT PANIC YET", { u: true, fs: 14 });
+        return svg(s);
+      };
+      scenes.s4c = () => {
+        const r = prng(121), hz = 250, vx = 610;
+        let s = `<rect width="${W}" height="${hz}" fill="url(#dusk)"/>` + ferris(250, 150, 70, 0.6) + lane(hz, vx, 60);
+        s += stall(380, 225, 90, 70, "#2f5d8a") + stall(180, 200, 170, 150, "#9a7a3a") + stall(-60, 150, 220, 300, "#8a3b2e");
+        s += stall(760, 225, 90, 70, "#8a3b2e") + stall(870, 200, 170, 150, "#2f5d8a") + stall(1060, 150, 220, 300, "#9a7a3a");
+        s += crowd(r, 22, 150, 1080, 280, 420, 50, 120) + wires(0, 4, r) + bulbs(-20, 60, 1240, 70, 20, 40, 4);
+        s += `<g id="s4c-f">` + fig(575, 560, 200, { c: C.skin, jacket: C.father, face: "l", label: "FATHER" }) + `</g>`;
+        s += `<g id="s4c-m">` + fig(650, 560, 190, { c: C.skin, jacket: C.mother, face: "r", sari: true, label: "MOTHER" }) + `</g>`;
+        s += `<g id="s4c-s">` + fig(612, 520, 140, { c: C.skin, jacket: C.sister, face: "r", label: "SISTER" }) + `</g>`;
+        s += arrow(540, 480, 250, 480, C.rust, "ahR", "→ JHOOLA", { tx: 330, ty: 466, dash: "10 8", w: 2.5 }) + arrow(690, 480, 980, 480, C.rust, "ahR", "→ STALLS", { tx: 900, ty: 466, dash: "10 8", w: 2.5 }) + arrow(612, 380, 612, 300, C.rust, "ahR", "→ BACK TO COUNTER", { tx: 612, ty: 290, dash: "10 8", w: 2.5 });
+        s += label(608, 650, "THEY SPLIT THREE WAYS — THE FRAME EMPTIES FROM THE CENTRE", { c: "#b9b3a8", fs: 12 });
+        return svg(s);
+      };
+      scenes.s4d = () => {
+        const r = prng(131), hz = 400;
+        let s = `<rect width="${W}" height="${hz}" fill="url(#dusk)"/><rect x="0" y="${hz}" width="${W}" height="${H - hz}" fill="#241d16"/>` + ferris(380, 230, 220, 0.85);
+        s += `<rect x="120" y="500" width="520" height="30" fill="#3a3025"/>` + label(130, 150, "JHOOLA (FERRIS WHEEL)", { c: "#b9b3a8", fs: 12 });
+        const kids = ["#6b8f5a", "#b8864a", "#8a4fa0", "#c9a23a", "#4f8a8a", "#a05050"];
+        s += `<g id="s4d-queue">`;
+        kids.forEach((k, i) => (s += fig(170 + i * 82, 600, 150 + ((i * 37) % 40), { c: C.skin, jacket: k, face: "r" })));
+        s += `</g><g id="s4d-none" opacity="0"><rect x="120" y="390" width="530" height="240" fill="none" stroke="${C.rust}" stroke-width="3" stroke-dasharray="10 8"/>` + label(385, 382, "QUEUE CHECKED — NO BLUE JACKET", { c: C.rust, fs: 13 }) + `</g>`;
+        s += fig(930, 1060, 900, { c: C.skin, jacket: C.father, face: "l", key: true, ring: true });
+        s += label(930, 660, "FATHER — SCANS THE QUEUE", { c: C.ink, fs: 12 });
+        s += arrow(380, 110, 560, 210, C.amber, "ahA", "JHOOLA BULBS 3000K", { tx: 560, ty: 100 });
+        return svg(s);
+      };
+
+      // ---------- SEQ 5 · THE WITNESS ----------
+      const sellerBunch = (cx, cy, sz, r, id = "") => balloonBunch(cx, cy, sz, r, true, id);
+      scenes.s5a = () => {
+        const r = prng(141), hz = 300, vx = 640;
+        let s = `<rect width="${W}" height="${hz}" fill="url(#night)"/>` + ferris(200, 200, 50, 0.45) + lane(hz, vx, 40);
+        s += stall(400, 270, 80, 70, "#2f5d8a", { lit: 0.6 }) + stall(180, 240, 170, 150, "#9a7a3a", { lit: 0.6 }) + stall(-60, 190, 220, 300, "#8a3b2e", { lit: 0.5 });
+        s += stall(780, 260, 100, 90, "#8a3b2e", { lit: 0.6 }) + stall(1040, 210, 220, 260, "#2f5d8a", { lit: 0.6 });
+        s += crowd(r, 10, 250, 1000, 320, 420, 60, 130, { op: 0.8 });
+        s += `<circle cx="820" cy="170" r="28" fill="${C.amber}" opacity=".35" filter="url(#glow)"/><circle cx="820" cy="170" r="7" fill="#ffe2a6"/><line x1="820" y1="0" x2="820" y2="163" stroke="#2a2522" stroke-width="1.5"/>`;
+        s += sellerBunch(930, 290, 62, r);
+        s += fig(900, 580, 250, { c: C.skin, jacket: C.vendor, face: "l", gamchha: true, key: true, ring: true, label: "SELLER",
+          armR: `<line x1="932" y1="386" x2="930" y2="414" stroke="${C.skin}" stroke-width="10" stroke-linecap="round"/>` });
+        s += `<g id="s5a-par">` + fig(330, 590, 260, { c: C.skin, jacket: C.father, face: "r", key: true, label: "FATHER" }) + fig(420, 590, 245, { c: C.skin, jacket: C.mother, face: "r", sari: true, key: true, label: "MOTHER" }) + `</g>`;
+        s += arrow(780, 190, 680, 330, C.amber, "ahA", "ONE STALL BULB 3000K — SHARED", { tx: 640, ty: 150 });
+        s += arrow(120, 640, 440, 640, C.ink, "ahI", "PARENTS ENTER FRAME-LEFT", { tx: 250, ty: 628, dash: "12 8", w: 2.5 });
+        return svg(s);
+      };
+      scenes.s5b = () => {
+        const r = prng(151), hz = 330;
+        let s = `<rect width="${W}" height="${hz}" fill="url(#night)"/><g filter="url(#soft)">` + lane(hz, 620, 40) + stall(-40, 200, 300, 260, "#9a7a3a", { lit: 0.6 }) + stall(1000, 200, 280, 260, "#2f5d8a", { lit: 0.6 }) + crowd(r, 8, 300, 900, 360, 420, 90, 140, { op: 0.7 }) + `</g>`;
+        s += sellerBunch(1070, 240, 80, r);
+        s += `<circle cx="620" cy="46" r="34" fill="${C.amber}" opacity=".4" filter="url(#glow)"/><circle cx="620" cy="46" r="9" fill="#ffe2a6"/>`;
+        s += fig(270, 1000, 800, { c: C.skin, jacket: C.father, face: "r", key: true, ring: true,
+          armR: `<g id="s5b-gest"><line x1="374" y1="392" x2="520" y2="520" stroke="${C.skin}" stroke-width="22" stroke-linecap="round"/><line x1="500" y1="528" x2="556" y2="528" stroke="${C.skin}" stroke-width="12" stroke-linecap="round"/></g>` });
+        s += fig(460, 1010, 760, { c: C.skin, jacket: C.mother, face: "r", sari: true, key: true });
+        s += fig(930, 1000, 780, { c: C.skin, jacket: C.vendor, face: "l", gamchha: true, key: true });
+        s += label(270, 660, "FATHER", { u: true }) + label(460, 660, "MOTHER", { u: true }) + label(930, 660, "SELLER", { u: true });
+        s += label(560, 580, "HAND AT CHILD HEIGHT", { c: C.rust, fs: 12 });
+        s += arrow(590, 60, 420, 200, C.amber, "ahA", "") + arrow(650, 60, 820, 200, C.amber, "ahA", "") + label(620, 110, "ONE BULB LIGHTS BOTH SIDES", { c: C.amber, fs: 12 });
+        return svg(s);
+      };
+      scenes.s5c = () => {
+        const r = prng(161);
+        let s = `<rect width="${W}" height="${H}" fill="url(#bgclose)"/>` + bokeh(r, 22, 420);
+        s += `<g filter="url(#soft)" opacity=".8">` + sellerBunch(1030, 260, 100, r) + `</g>`;
+        s += `<g id="s5c-sel">` + bust(700, 560, 260, { c: C.vendor, head: C.skin, face: "l", gamchha: true, specs: true, eye: true, key: true, fill: true, ring: true }) + `</g>`;
+        s += arrow(1060, 560, 1200, 560, C.rust, "ahR", "GATE — OUTSIDE FRAME", { tx: 1080, ty: 540, dash: "10 8", w: 2.5 });
+        s += arrow(110, 130, 530, 290, C.amber, "ahA", "SAME 3000K BULB — BOTH CHEEKS", { tx: 220, ty: 120 });
+        s += label(330, 640, "CERTAINTY, NOT CORROBORATION — NO VILLAIN LIGHT", { c: "#b9b3a8", fs: 12 });
+        return svg(s);
+      };
+      scenes.s5d = () => {
+        const r = prng(171);
+        let s = `<rect width="${W}" height="${H}" fill="url(#bgclose)"/>` + bokeh(r, 20, 380);
+        s += `<g filter="url(#soft)" opacity=".7">` + sellerBunch(1000, 260, 80, r) + `</g>`;
+        s += bust(780, 600, 220, { c: C.vendor, head: C.skin, face: "l", gamchha: true, specs: true, eye: true, key: true, ring: true });
+        s += `<g id="s5d-hand"><line x1="640" y1="720" x2="620" y2="440" stroke="${C.skin}" stroke-width="30" stroke-linecap="round"/><line x1="610" y1="432" x2="596" y2="366" stroke="${C.skin}" stroke-width="12" stroke-linecap="round"/><line x1="630" y1="430" x2="640" y2="364" stroke="${C.skin}" stroke-width="12" stroke-linecap="round"/>` + label(618, 350, "“DO AADMI”", { c: C.rust, fs: 13 }) + `</g>`;
+        s += bust(130, 780, 430, { c: C.father, head: C.skin, face: "r", filter: "soft", op: 0.92 });
+        s += label(170, 640, "FATHER — OTS, SOFT", { c: "#b9b3a8", fs: 12 });
+        s += label(700, 130, "HIS WORDS ONLY — NO CUTAWAY TO THE MEN", { c: C.rust, fs: 13 });
+        s += arrow(330, 170, 600, 320, C.amber, "ahA", "KEY 3000K", { tx: 360, ty: 160 });
+        return svg(s);
+      };
+      scenes.s5e = () => {
+        const r = prng(181), hz = 320, vx = 330;
+        let s = `<rect width="${W}" height="${hz}" fill="url(#night)"/>` + lane(hz, vx, 30);
+        s += stall(460, 280, 90, 70, "#9a7a3a", { lit: 0.5 }) + stall(600, 240, 170, 160, "#8a3b2e", { lit: 0.55 }) + stall(-60, 230, 200, 200, "#2f5d8a", { lit: 0.4 });
+        s += `<rect x="0" y="0" width="560" height="${H}" fill="url(#coolR)" transform="translate(560 0) scale(-1 1)"/>`;
+        s += `<g id="s5e-gate"><rect x="282" y="220" width="18" height="100" fill="#3a3d44"/><rect x="380" y="220" width="18" height="100" fill="#3a3d44"/><path d="M276 224 Q340 170 404 224" fill="none" stroke="#3a3d44" stroke-width="14"/></g>`;
+        s += label(340, 160, "MELA GATE — EMPTY", { c: C.cool, fs: 12 });
+        s += crowd(r, 6, 420, 700, 330, 380, 50, 90, { op: 0.7 });
+        s += sellerBunch(1080, 250, 70, r);
+        s += `<g id="s5e-pl">` + fig(520, 820, 540, { c: C.skin, jacket: C.father, face: "r", key: true }) + fig(640, 830, 520, { c: C.skin, jacket: C.mother, face: "r", sari: true, key: true }) + `</g>`;
+        s += `<g id="s5e-pr" opacity="0">` + fig(520, 820, 540, { c: C.skin, jacket: C.father, face: "l", key: true }) + fig(640, 830, 520, { c: C.skin, jacket: C.mother, face: "l", sari: true, key: true }) + `</g>`;
+        s += fig(960, 940, 740, { c: C.skin, jacket: C.vendor, face: "l", gamchha: true, key: true, ring: true,
+          armR: `<line x1="1056" y1="378" x2="1080" y2="392" stroke="${C.skin}" stroke-width="20" stroke-linecap="round"/>`, armL: `<g id="s5e-point"><line x1="864" y1="377" x2="700" y2="236" stroke="${C.skin}" stroke-width="20" stroke-linecap="round"/></g>` });
+        s += arrow(690, 232, 420, 240, C.rust, "ahR", "“US GATE SE” — HIS CLAIM", { tx: 560, ty: 218, dash: "10 8", w: 2.5, id: "s5e-line", op: 0 });
+        s += label(520, 660, "FATHER", { u: true }) + label(660, 660, "MOTHER", { u: true }) + label(960, 660, "SELLER", { u: true });
+        s += label(608, 40, "NO VAN, NO KIDNAPPERS ON SCREEN — ONLY HIS HAND", { c: "#b9b3a8", fs: 12 });
+        return svg(s);
+      };
+      scenes.s5f = () => {
+        const r = prng(191);
+        let s = `<rect width="${W}" height="${H}" fill="url(#bgclose)"/>` + bokeh(r, 20, 400);
+        s += bust(1190, 640, 330, { c: C.father, head: C.skin, face: "l", filter: "soft", op: 0.85 });
+        s += bust(360, 560, 250, { c: C.mother, head: C.skin, face: "r", sari: true, eye: true, key: true, ring: true });
+        ["HAAN, AAYA THA", "DO AADMI", "RED BALLOON", "WHITE VAN", "US GATE SE"].forEach((a, i) => {
+          s += `<g class="ans"><rect x="640" y="${216 + i * 64}" width="310" height="48" fill="rgba(8,9,11,.85)" stroke="${C.rust}" stroke-width="2"/><text x="660" y="${248 + i * 64}" font-size="22" font-weight="800" fill="#ee7d60" letter-spacing="1.5">${i + 1} · ${a}</text></g>`;
+        });
+        s += label(795, 200, "[POST] 5 JAWAB — ALL FROM ONE WITNESS", { c: C.rust, fs: 12 });
+        s += label(1150, 660, "FATHER EDGE — SOFT", { c: "#b9b3a8", fs: 12 });
+        s += arrow(80, 130, 250, 250, C.amber, "ahA", "WARM SIDE KEY ON EYES", { tx: 150, ty: 120 });
+        return svg(s);
+      };
+      scenes.s5g = () => {
+        const r = prng(201);
+        let s = `<rect width="${W}" height="${H}" fill="url(#bgclose)"/>` + bokeh(r, 20, 400);
+        s += bust(420, 600, 250, { c: C.father, head: C.skin, face: "r", eye: true, key: true, sweat: true, ring: true });
+        s += bust(790, 590, 240, { c: C.mother, head: C.skin, face: "r", sari: true, eye: true, key: true, sweat: true, ring: true });
+        s += `<rect id="s5g-dim" width="${W}" height="${H}" fill="#07080a" opacity="0"/>`;
+        s += label(420, 660, "FATHER", { u: true }) + label(790, 660, "MOTHER", { u: true });
+        s += label(608, 70, "MELA SOUND DROPS OUT — HOLD ON BOTH", { c: "#b9b3a8", fs: 12 });
+        s += arrow(80, 150, 270, 280, C.amber, "ahA", "KEY 3000K", { tx: 120, ty: 140 });
+        return svg(s);
+      };
+
+      // ---------- SEQ 6 · THE LADDER (narrator bridge) ----------
+      scenes.s6a = () => {
+        const r = prng(211), hz = 280, vx = 860;
+        let s = `<rect width="${W}" height="${hz}" fill="url(#night)"/>` + lane(hz, vx, 30);
+        s += stall(-60, 170, 260, 300, "#9a7a3a", { lit: 0.6 }) + stall(260, 230, 150, 120, "#8a3b2e", { lit: 0.6 }) + stall(1050, 200, 200, 220, "#2f5d8a", { lit: 0.5 });
+        s += `<g><polygon points="800,${hz} 920,${hz} 900,${hz - 50} 820,${hz - 50}" fill="#5a5f3a"/><polygon points="812,${hz - 50} 908,${hz - 50} 860,${hz - 80}" fill="#6b704a"/><line x1="940" y1="${hz}" x2="940" y2="${hz - 110}" stroke="#8b9098" stroke-width="2"/>`;
+        s += `<circle cx="860" cy="${hz - 30}" r="30" fill="${C.cool}" opacity=".45" filter="url(#glow)"/><circle cx="860" cy="${hz - 30}" r="5" fill="#cfe0ff"/>`;
+        for (let i = 1; i <= 3; i++) s += `<path class="wave" d="M${940 + i * 10} ${hz - 125 + i * 2} a${i * 12} ${i * 12} 0 0 1 0 ${i * 20}" fill="none" stroke="${C.cool}" stroke-width="2"/>`;
+        s += `</g>` + label(870, hz - 130, "MELA CHOWKI — PART 2", { c: C.cool, fs: 12 });
+        s += crowd(r, 8, 300, 1000, 300, 360, 40, 80, { op: 0.7 });
+        s += sellerBunch(560, 330, 22, r);
+        s += fig(470, 460, 120, { c: C.skin, jacket: C.father, face: "r" }) + fig(505, 460, 114, { c: C.skin, jacket: C.mother, face: "r", sari: true }) + fig(555, 460, 118, { c: C.skin, jacket: C.vendor, face: "l", gamchha: true });
+        s += label(515, 500, "PARENTS + SELLER — SMALL NOW", { c: C.ink, fs: 12 });
+        s += arrow(860, 330, 620, 420, C.cool, "ahC", "COOL LAMP, POLICE POST", { tx: 900, ty: 350 });
+        s += label(608, 640, "SFX: WIRELESS CRACKLE BRIDGES INTO THE NARRATOR SET", { c: "#b9b3a8", fs: 12 });
+        return svg(s);
+      };
+      scenes.s6b = () => {
+        const r = prng(221), y0 = 80, y1 = 600, n = 8;
+        let s = nset(r) + hostDesk(330, 700, 440);
+        s += ladder(760, y0, y1, 140, n, { id: "s6b-lad" });
+        s += label(830, +rungY(y0, y1, n, 0) + 30, "CONSTABLE · MELA CHOWKI", { c: C.amber, fs: 13, id: "s6b-lo" });
+        s += label(830, +rungY(y0, y1, n, n - 1) - 14, "DGP · LUCKNOW", { c: C.amber, fs: 13, id: "s6b-hi" });
+        s += label(330, 640, "HOST", { u: true });
+        s += label(830, 660, "[POST] ONE LADDER — NO INVENTED OFFICERS", { c: C.rust, fs: 11 });
+        s += arrow(60, 110, 230, 240, C.amber, "ahA", "WARM KEY FROM LEFT", { tx: 110, ty: 100 });
+        return svg(s);
+      };
+      scenes.s6c = () => {
+        const r = prng(231), y0 = 150, y1 = 640, n = 8;
+        let s = nset(r);
+        s += bust(360, 590, 240, { c: C.host, head: C.skin, eye: true, key: true, fill: true, ring: true });
+        s += ladder(820, y0, y1, 120, n, { id: "s6c-lad" });
+        s += label(880, 665, "[POST] EVERY RUNG SHAKES", { c: C.rust, fs: 12 });
+        s += label(360, 660, "HOST · TO LENS", { u: true });
+        s += arrow(80, 120, 250, 250, C.amber, "ahA", "WARM KEY", { tx: 110, ty: 110 });
+        return svg(s);
+      };
+      scenes.s6d = () => {
+        const r = prng(241);
+        let s = nset(r) + `<g opacity=".35">` + ladder(900, 200, 640, 110, 8) + `</g>`;
+        s += bust(560, 620, 310, { c: C.host, head: C.skin, eye: true, key: true, fill: true, ring: true });
+        s += label(955, 665, "LADDER ECHO — 'SEEDHI'", { c: C.rust, fs: 12 });
+        s += arrow(90, 120, 380, 250, C.amber, "ahA", "WARM KEY · 4:1", { tx: 140, ty: 110 });
+        s += label(470, 665, "HOST · EYES · NO GESTURES", { u: true });
+        return svg(s);
+      };
+      scenes.s6e = () => {
+        let s = `<rect width="${W}" height="${H}" fill="#121316"/>`;
+        s += `<path d="M-40 ${H} L-40 300 Q200 170 620 180 Q1000 190 1260 330 L1260 ${H} Z" fill="${C.khaki}"/>`;
+        s += `<g id="s6e-strap"><polygon points="280,215 820,205 830,285 270,300" fill="#8a7447" stroke="#6b5a36" stroke-width="3"/><circle cx="800" cy="246" r="12" fill="#d9c79a"/>`;
+        s += star(380, 256, 30, { cls: "star" }) + star(480, 254, 30, { cls: "star" }) + star(580, 252, 30, { cls: "star" }) + `</g>`;
+        s += `<rect x="760" y="430" width="230" height="56" fill="#2a2a2a" stroke="#d9c79a" stroke-width="2"/>`;
+        s += label(480, 190, "BLANK STAR SILHOUETTES — LABELS IN POST ONLY", { c: C.rust, fs: 12 });
+        s += label(875, 520, "NAME BADGE — BLANK", { c: "#b9b3a8", fs: 12 });
+        s += arrow(60, 140, 300, 210, C.amber, "ahA", "RAKING KEY 3000K", { tx: 130, ty: 128 });
+        s += label(608, 640, "UNIFORM ON A STAND · NARRATOR SET INSERT", { c: C.ink, fs: 12 });
+        return svg(s);
+      };
+      scenes.s6f = () => {
+        const r = prng(251), y0 = 130, y1 = 620, n = 8;
+        let s = nset(r) + bust(300, 610, 220, { c: C.host, head: C.skin, eye: true, key: true, fill: true, ring: true });
+        s += ladder(640, y0, y1, 120, n);
+        ["SHO", "IO", "CO"].forEach((t, i) => {
+          const y = 270 + i * 100;
+          s += `<g class="tag"><line x1="770" y1="${y}" x2="880" y2="${y}" stroke="${C.rust}" stroke-width="2" stroke-dasharray="6 6"/><rect x="880" y="${y - 30}" width="150" height="56" fill="rgba(8,9,11,.85)" stroke="${C.amber}" stroke-width="2"/><text x="955" y="${y + 9}" text-anchor="middle" font-size="28" font-weight="800" fill="${C.amber}">${t} ?</text></g>`;
+        });
+        s += label(955, 580, "[POST] RANK — OR POST?", { c: C.rust, fs: 12 });
+        s += label(300, 660, "HOST", { u: true });
+        s += arrow(60, 120, 200, 260, C.amber, "ahA", "WARM KEY", { tx: 100, ty: 110 });
+        return svg(s);
+      };
+      scenes.s6g = () => {
+        const y0 = -700, y1 = 684, n = 12;
+        let s = `<rect width="${W}" height="${H}" fill="#121316"/><g id="s6g-lad">` + ladder(520, y0, y1, 180, n, { c: "#d2b27a" });
+        s += label(610, +rungY(y0, y1, n, 0) + 34, "CONSTABLE", { c: C.amber, fs: 15 });
+        s += `<g id="s6g-q"><text x="610" y="${y0 + 260}" text-anchor="middle" font-size="120" font-weight="800" fill="${C.rust}">?</text></g>`;
+        s += label(610, y0 + 310, "SABSE POWERFUL KAUN?", { c: C.rust, fs: 18 }) + `</g>`;
+        s += `<g id="s6g-end" opacity="0"><rect x="360" y="560" width="500" height="54" fill="#d0583c"/><text x="610" y="596" text-anchor="middle" font-size="22" font-weight="800" fill="#0c0d0f" letter-spacing="2">END PART 1 → PART 2 · GROUND</text></g>`;
+        s += label(1030, 640, "TILT UP THE LADDER — HOLD ON THE TOP", { c: "#b9b3a8", fs: 12 });
+        return svg(s);
+      };
+
+      // 0A — infinite zoom: district map → overhead mela plate → the 1A board (all in one world space)
+      const ZK1 = 8, ZK2 = 5; // map→overhead, overhead→1A
+      const ZP1 = [0.618 * W, 0.443 * H]; // "Mela / Fair Ground" marker on map.png
+      const ZW1 = W / ZK1, ZH1 = H / ZK1, ZL1 = ZP1[0] - ZW1 / 2, ZT1 = ZP1[1] - ZH1 / 2;
+      const ZC2 = [ZL1 + 0.5 * ZW1, ZT1 + 0.6 * ZH1]; // landing point inside the overhead plate
+      const ZW2 = ZW1 / ZK2, ZH2 = ZH1 / ZK2;
+      scenes.s0a = () =>
+        `<div class="zworld" id="s0a-world">` +
+        `<div class="zplate" style="left:0;top:0;width:${W}px;height:${H}px"><img src="assets/zoom/map.jpg" alt="Mirzapur district map" /></div>` +
+        `<div class="zplate" id="s0a-p2" style="left:${ZL1}px;top:${ZT1}px;width:${ZW1}px;height:${ZH1}px;opacity:0"><img src="assets/zoom/overhead.jpg" alt="Overhead view of the mela" /></div>` +
+        `<div class="zplate" id="s0a-p3" style="left:${ZC2[0] - ZW2 / 2}px;top:${ZC2[1] - ZH2 / 2}px;width:${ZW2}px;height:${ZH2}px;opacity:0">${scenes.s1a().replace(/ id="s1a-[^"]*"/g, "")}</div>` +
+        `</div><div class="zret" id="s0a-ret"><span>TARGET · MELA / FAIR GROUND</span></div>` +
+        `<div class="zlab mono" id="s0a-lab1">PLATE 1 · DISTRICT MAP — map.png</div>` +
+        `<div class="zlab mono" id="s0a-lab2" style="opacity:0">PLATE 2 · MELA OVERHEAD — overhead view of meela.png</div>` +
+        `<div class="zlab mono" id="s0a-lab3" style="opacity:0">PLATE 3 · LANDS ON 1A — HARD CUT INTO ITS PUSH</div>` +
+        `<div class="zread mono" id="s0a-z">ZOOM ×1.0</div>`;
+      function applyZoom(z) {
+        const s = z <= 1 ? Math.pow(ZK1, z) : ZK1 * Math.pow(ZK2, z - 1);
+        let tx, ty;
+        if (z <= 1) {
+          const sx = ZP1[0] + (W / 2 - ZP1[0]) * z, sy = ZP1[1] + (H / 2 - ZP1[1]) * z;
+          tx = sx - ZP1[0] * s; ty = sy - ZP1[1] * s;
+        } else {
+          const u = z - 1, s1x = W / 2 + (ZC2[0] - ZP1[0]) * ZK1, s1y = H / 2 + (ZC2[1] - ZP1[1]) * ZK1;
+          tx = s1x + (W / 2 - s1x) * u - ZC2[0] * s; ty = s1y + (H / 2 - s1y) * u - ZC2[1] * s;
+        }
+        const cl = (v) => Math.min(1, Math.max(0, v)), g = (id) => document.getElementById(id);
+        g("s0a-world").style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+        g("s0a-p2").style.opacity = cl((z - 0.45) / 0.4);
+        g("s0a-p3").style.opacity = cl((z - 1.5) / 0.4);
+        g("s0a-lab1").style.opacity = z < 0.65 ? 1 : 0;
+        g("s0a-lab2").style.opacity = z >= 0.65 && z < 1.7 ? 1 : 0;
+        g("s0a-lab3").style.opacity = z >= 1.7 ? 1 : 0;
+        g("s0a-ret").style.opacity = 1 - cl((z - 1.6) / 0.3);
+        g("s0a-z").textContent = `ZOOM ×${s.toFixed(1)}`;
+      }
+
+      // ---------- shot data (camera, light, environment, cast, refs) ----------
+      const SHOTS = [
+        { id: "s0a", k: "0A", seq: 0, type: "WIDE", dur: 3.5, title: "Mirzapur district → the mela", inT: "COLD OPEN", sfx: true,
+          cam: "Virtual camera · map to rooftop · infinite zoom ×1 → ×40", light: "Map plate reads neutral; the overhead mela plate brings in night practicals, landing on 1A's dusk grade",
+          env: "District map → overhead mela at night → the 1A board",
+          cast: "None — the city is the subject; the target is the Mela / Fair Ground marker",
+          note: "Keep the mela marker locked at frame centre the whole way. Motion graphic, not a drone shot.",
+          vo: "Mela ambience and fair music rise under the zoom — no narration", gl: "The first VO line lands on the cut to 1A.",
+          plan: { fov: 74, move: "push", subj: [], high: true },
+          refs: [["map.jpg", "REF FOLDER · Enviorment / map.png"], ["env_overhead.jpg", "REF FOLDER · Enviorment / overhead view of mela"]] },
+        { id: "s1a", k: "1A", seq: 1, type: "WIDE", dur: 3, title: "Mirzapur mela at 19:00", inT: "ZOOM LANDS FROM 0A",
+          cam: "24mm · rooftop 6m, high angle (not drone) · slow push-in", light: "Blue dusk 6000–6500K sky; hundreds of 3000K stall practicals; one haze layer",
+          env: "Full geography: clock tower, ferris wheel, dusty lane, tarpaulin stalls, overhead wiring",
+          cast: "Crowd only — the family is lost inside it, not yet singled out",
+          note: "Composite H00 clock after the first living image. No neon carnival, no palace skyline.",
+          vo: "Shaam ke 7 baj rahe the.", gl: "It was seven in the evening.",
+          plan: { fov: 74, move: "push", subj: [] , high: true},
+          refs: [["env_wide.jpg", "REF FOLDER · Enviorment / mela overview"], ["book_mela.jpg", "VISUAL BOOK p.03 · Mela / Density"]] },
+        { id: "s1b", k: "1B", seq: 1, type: "MEDIUM", dur: 3.4, title: "The stall lane at eye level",
+          cam: "35mm · adult eye-level 1.55m · slow lateral drift L→R", light: "Key 3000K stall bulb cam-left, 45°; 6500K dusk fill; ~4:1, faces readable",
+          env: "Tarpaulin stalls, steel snack counters, tangled leads, bulb strings across the lane",
+          cast: "Six background people recycled behind two foreground occluders",
+          note: "Density comes from foreground occlusion, not scale. No aerial.",
+          vo: "Mirzapur ke mele mein chaaron taraf bas bheed hi bheed thi.", gl: "All around the Mirzapur fair there was nothing but crowd.",
+          plan: { fov: 54, move: "drift", subj: [] },
+          refs: [["env_overhead.jpg", "REF FOLDER · Enviorment / overhead view of mela"], ["book_cover.jpg", "VISUAL BOOK p.01 · light reference only"]] },
+        { id: "s2a", k: "2A", seq: 2, type: "WIDE", dur: 2.4, title: "The family inside the moving crowd",
+          cam: "35mm · eye-level 1.55m · slow lateral drift (board 01A)", light: "3000K stall key from left, 6500K dusk fill; family shares the crowd's light",
+          env: "Stall lane with depth; crowd layered soft in front and behind",
+          cast: "Father, Dhruv, sister, mother — centre-left, fixed while the crowd moves",
+          note: "Keep the parents fixed in a moving crowd. Do not light them as suspects.",
+          vo: "Isi bheed mein Gupta family bhi thi,", gl: "In this crowd was the Gupta family,",
+          plan: { fov: 54, move: "drift", subj: [["F", C.father], ["D", C.blue], ["S", C.sister], ["M", C.mother]] },
+          refs: [["family_walk.jpg", "REF FOLDER · Family / walking the lane"], ["board01A.jpg", "VISUAL BOOK p.08 · board 01A"]] },
+        { id: "s2b", k: "2B", seq: 2, type: "MEDIUM", dur: 2.8, title: "Four-shot, walking to camera",
+          cam: "50mm · eye-level 1.4m · dolly back, matching their walk", light: "Warm key cam-left on faces, cool dusk fill; background stalls soft",
+          env: "Lane and stalls thrown soft; bulb strings overhead",
+          cast: "Father (light-blue shirt), Dhruv (blue jacket), sister (orange top), mother (cream sari)",
+          note: "Wardrobe is locked to the reference sheet. No new costume or hair.",
+          vo: "jo bachchon ke saath mela ghoomne aayi thi.", gl: "out at the fair with their children.",
+          plan: { fov: 40, move: "back", subj: [["F", C.father], ["D", C.blue], ["S", C.sister], ["M", C.mother]] },
+          refs: [["cast_lineup.jpg", "REF FOLDER · Family / father, mother, son, daughter"], ["family_walk.jpg", "REF FOLDER · Family / group reference"]] },
+        { id: "s2c", k: "2C", seq: 2, type: "CLOSE", dur: 3, title: "Meet Dhruv",
+          cam: "85mm · child eye-level 1.05m · tiny push-in", light: "Soft 3000K key on the left cheek, cool fill on the right; eyes lit",
+          env: "Bokeh bulbs and ferris wheel; sister soft behind",
+          cast: "Dhruv, 8 — blue jacket with white stripes and centre zip",
+          note: "The audience must notice Dhruv before losing him. Hold on his eyes.",
+          vo: "Aur unhi bachchon mein tha 8 saal ka Dhruv.", gl: "And among those children was 8-year-old Dhruv.",
+          plan: { fov: 24, move: "push", subj: [["D", C.blue]] },
+          refs: [["son_close.jpg", "REF FOLDER · Family / close up of son"], ["book_cover.jpg", "VISUAL BOOK p.01 · jacket + balloon light ref"]] },
+        { id: "s3a", k: "3A", seq: 3, type: "MEDIUM", dur: 4.4, title: "The zid for a balloon",
+          cam: "50mm · child eye-level 1.05m · static", light: "Counter bulb 3000K keys the family from left; balloons lit from the far stall",
+          env: "Jalebi counter frame-left; balloon bundle peeks in top-right",
+          cast: "Dhruv tugs father's sleeve and points; father's head out of frame; mother and sister eating",
+          note: "Child height defines vulnerability. The adults' heads stay out of frame — no one looks down.",
+          vo: "Blue jacket pehne Dhruv pichhle aadhe ghante se balloon lene ki zid kar raha tha.", gl: "In his blue jacket, Dhruv had been pleading for a balloon for half an hour.",
+          plan: { fov: 40, move: "static", subj: [["F", C.father], ["D", C.blue], ["M", C.mother], ["S", C.sister]] },
+          refs: [["son_ask.jpg", "REF FOLDER · Family / son asking for balloon"], ["board01B.jpg", "VISUAL BOOK p.08 · board 01B"]] },
+        { id: "s3b", k: "3B", seq: 3, type: "CLOSE", dur: 2.2, title: "Nobody listens",
+          cam: "85mm · child eye-level 1.05m · static", light: "Same warm key; adults are dark silhouettes at the frame edges",
+          env: "Bulb bokeh above; the world is adult-height",
+          cast: "Dhruv MCU; parents cropped at both edges, turned away",
+          note: "His eye-line moves from the parents to the balloons — that is the decision.",
+          vo: "Jab kisi ne uski baat nahi suni,", gl: "When no one listened to him,",
+          plan: { fov: 24, move: "static", subj: [["D", C.blue]] },
+          refs: [["son_close.jpg", "REF FOLDER · Family / close up of son"], ["board01B.jpg", "VISUAL BOOK p.08 · board 01B, adult edge"]] },
+        { id: "s3c", k: "3C", seq: 3, type: "WIDE", dur: 3.4, title: "Blue slips into the lane",
+          cam: "35mm · child eye-level 1.05m · static — let him leave", light: "Warm bulbs at the counter fade to cool shadow down the lane",
+          env: "Lane toward the balloon stall; passer-by crosses the near foreground",
+          cast: "Family at the counter, backs turned; Dhruv exits frame-right",
+          note: "Hold the empty space after he leaves. Don't show a handover or anyone taking him.",
+          vo: "to woh chupchaap balloon lene khud chala gaya.", gl: "he quietly went off to get the balloon himself.",
+          plan: { fov: 54, move: "static", subj: [["F", C.father], ["M", C.mother], ["S", C.sister], ["D", C.blue]] },
+          refs: [["son_wander.jpg", "REF FOLDER · Family / son wandering off"], ["board01C.jpg", "VISUAL BOOK p.08 · board 01C"]] },
+        { id: "s4a", k: "4A", seq: 4, type: "MEDIUM", dur: 3.6, title: "The missing lower third",
+          cam: "85mm · eye-level 1.5m · tiny push, then hold (board 01D)", light: "Same 3000K counter key from left; cool dusk fill; nothing changes but the gap",
+          env: "Jalebi counter and crowd thrown soft; ten minutes have passed",
+          cast: "Father and mother at opposite frame edges; the child-height centre is empty",
+          note: "Mela music thins the moment the mother clocks the gap. Composite the 19:10 clock in post.",
+          vo: "Kareeb 10 minute baad gharwalon ko jab wo kahin nahi dikha,", gl: "About ten minutes later, when the family couldn't see him anywhere,",
+          plan: { fov: 24, move: "push", subj: [["F", C.father], ["M", C.mother]] },
+          refs: [["fam_discovery.jpg", "REF FOLDER · Family / family discovery"], ["board01D.jpg", "VISUAL BOOK p.08 · board 01D"]] },
+        { id: "s4b", k: "4B", seq: 4, type: "CLOSE", dur: 3.6, title: "Maybe the jhoola, maybe a stall",
+          cam: "85mm · eye-level 1.5m · static", light: "Warm key holds on her eyes; ferris-wheel bulbs fall to bokeh",
+          env: "Ferris wheel and a toy stall, both out of focus behind her",
+          cast: "Mother, close. Her eye-line goes to the jhoola, then to the stall",
+          note: "Worry, not panic yet. Her eyes do the searching — no whip pans.",
+          vo: "To unhe laga kisi jhoole ya dukaan ke paas ruk gaya hoga.", gl: "they assumed he'd stopped at some ride or stall.",
+          plan: { fov: 24, move: "static", subj: [["M", C.mother]] },
+          refs: [["cast_lineup.jpg", "REF FOLDER · Family / mother"], ["fam_discovery.jpg", "REF FOLDER · Family / family discovery"]] },
+        { id: "s4c", k: "4C", seq: 4, type: "WIDE", dur: 2.4, title: "They split up",
+          cam: "24mm · raised 2.4m (stall platform) · static", light: "Dusk sky 6500K over 3000K stall rows; the family shares the crowd's light",
+          env: "Lane junction: ferris wheel left, stall rows both sides, overhead bulbs",
+          cast: "Father to the jhoola, mother to the stalls, sister back toward the counter",
+          note: "The frame empties from the centre outwards. Keep them small inside the crowd.",
+          vo: "Sab alag-alag taraf dhoondhne lage.", gl: "They split up and searched in every direction.",
+          plan: { fov: 74, move: "static", subj: [["F", C.father], ["S", C.sister], ["M", C.mother]], high: true },
+          refs: [["env_overhead.jpg", "REF FOLDER · Enviorment / overhead view of mela"], ["family_walk.jpg", "REF FOLDER · Family / walking the lane"]] },
+        { id: "s4d", k: "4D", seq: 4, type: "MEDIUM", dur: 2.4, title: "Not at the jhoola",
+          cam: "50mm · eye-level 1.6m · static", light: "Jhoola bulbs 3000K key from the left; the father takes the same light",
+          env: "Ferris-wheel base, children queuing at the rail",
+          cast: "Father in the foreground, scanning a queue of children — none in blue",
+          note: "Read the absence: every jacket colour except blue.",
+          vo: "Par Dhruv nahi mila.", gl: "But Dhruv was nowhere to be found.",
+          plan: { fov: 40, move: "static", subj: [["F", C.father]] },
+          refs: [["fam_discovery.jpg", "REF FOLDER · Family / family discovery"], ["book_mela.jpg", "VISUAL BOOK p.03 · Mela / Density"]] },
+        { id: "s5a", k: "5A", seq: 5, type: "WIDE", dur: 3.6, title: "The parents reach the balloon seller", inT: "CUT · 19:15",
+          cam: "35mm · eye-level 1.5m · static, let them walk in", light: "Night now: isolated stall bulbs; one 3000K bulb over the seller lights them all",
+          env: "Thinner lane, stalls half-lit; the seller's balloon bunch is the brightest colour in frame",
+          cast: "Father and mother enter frame-left; the balloon seller (cream kurta, checked gamchha, jhola) waits frame-right",
+          note: "Establish the geography for 5B–5E: parents left, seller right, gate off frame-left.",
+          vo: "Dhoondhte-dhoondhte Dhruv ke maa-baap ek balloon bechne wale ke paas pahunche.", gl: "Still searching, Dhruv's parents reached a balloon seller.",
+          plan: { fov: 54, move: "static", subj: [["F", C.father], ["M", C.mother], ["V", C.vendor]] },
+          refs: [["vendor_full.jpg", "REF FOLDER · balloon vendor / full figure"], ["book_stall.jpg", "VISUAL BOOK p.03 · Balloon stall / witness"]] },
+        { id: "s5b", k: "5B", seq: 5, type: "MEDIUM", dur: 3.6, title: "The question", tag: "FATHER",
+          cam: "35mm · eye-level 1.5m · static (board 02A)", light: "One shared stall bulb between them: 3000K soft left key, 6000K fill, 4:1",
+          env: "Balloon bunch held high behind the seller; stalls soft behind",
+          cast: "Father asks and shows a child's height with his hand; mother beside him; seller frame-right",
+          note: "Parents left, seller right. Don't light the seller as a villain — he shares their bulb.",
+          vo: "Bhaiya, blue jacket pehne ek chhota bachcha yahan aaya tha kya?", gl: "Brother, did a little boy in a blue jacket come by here?",
+          plan: { fov: 54, move: "static", subj: [["F", C.father], ["M", C.mother], ["V", C.vendor]] },
+          refs: [["vendor_talk1.jpg", "REF FOLDER · scene ref / family speaking with vendor"], ["board02A.jpg", "VISUAL BOOK p.10 · board 02A"]] },
+        { id: "s5c", k: "5C", seq: 5, type: "CLOSE", dur: 3.8, title: "An immediate answer", tag: "VO + SELLER", raw: true,
+          cam: "85mm · eye-level 1.55m · locked (board 02B)", light: "The same amber bulb on both cheeks, gentle cool fill; neutral, not sinister",
+          env: "Balloon bunch soft behind him; gate direction lies outside frame-right",
+          cast: "Balloon seller, face right of centre, talking to the parents off frame-left",
+          note: "Certainty, not corroboration. He answers instantly — cut on the nod of “Haan”.",
+          vo: "Balloon wale ne turant kaha — “Haan. Abhi kuch der pehle aaya tha.”", gl: "The balloon seller answered at once: “Yes. He came by a little while ago.”",
+          plan: { fov: 24, move: "static", subj: [["V", C.vendor]] },
+          refs: [["vendor_face.jpg", "REF FOLDER · balloon vendor / face close up"], ["board02B.jpg", "VISUAL BOOK p.10 · board 02B"]] },
+        { id: "s5d", k: "5D", seq: 5, type: "MEDIUM", dur: 3.4, title: "“Do aadmi”", tag: "SELLER",
+          cam: "50mm · eye-level 1.55m · static, over the father's shoulder", light: "Same bulb, same key; father's shoulder dark and soft in the foreground",
+          env: "Balloon bunch soft behind; lane dark beyond",
+          cast: "Seller holds up two fingers; father's shoulder frame-left",
+          note: "Every kidnapping claim stays attached to the seller. No cutaway to the two men.",
+          vo: "Lekin balloon lene se pehle do aadmi uske paas aaye.", gl: "But before he could buy a balloon, two men came up to him.",
+          plan: { fov: 40, move: "static", subj: [["F", C.father], ["V", C.vendor]] },
+          refs: [["vendor_balloons.jpg", "REF FOLDER · balloon vendor / medium shot"], ["vendor_talk2.jpg", "REF FOLDER · scene ref / family speaking with vendor 2"]] },
+        { id: "s5e", k: "5E", seq: 5, type: "MEDIUM", dur: 5, title: "“…aur us gate se nikal gaye”", tag: "SELLER",
+          cam: "35mm · eye-level 1.5m · static three-shot", light: "Warm bulb on the group; the far lane and the gate fall to cool shadow",
+          env: "Stall lane running to the mela gate, empty, deep frame-left",
+          cast: "Seller points past the parents to the gate; the parents turn to look",
+          note: "Do not stage his account as a flashback. No van, no men — only his hand and the empty gate.",
+          vo: "Unhone use red balloon diya, white van mein bithaya… aur us gate se nikal gaye.", gl: "They gave him a red balloon, put him in a white van… and drove out through that gate.",
+          plan: { fov: 54, move: "static", subj: [["F", C.father], ["M", C.mother], ["V", C.vendor]] },
+          refs: [["vendor_talk2.jpg", "REF FOLDER · scene ref / family speaking with vendor 2"], ["book_stall.jpg", "VISUAL BOOK p.03 · Balloon stall / witness"]] },
+        { id: "s5f", k: "5F", seq: 5, type: "CLOSE", dur: 3.8, title: "Five answers, one witness",
+          cam: "85mm · eye-level 1.5m · static (board 02C)", light: "Warm side key held on her eyes; dim neutral fill",
+          env: "Stalls thrown to bokeh; five answer cards composited in post",
+          cast: "Mother, left third, looking at the seller off-right; father soft at the right edge",
+          note: "Fear lands on the listener. Every answer card is his claim, not a fact.",
+          vo: "Dhruv ke pita ke is ek sawal ke unhe 5 jawab mile.", gl: "One question from Dhruv's father got them five answers.",
+          plan: { fov: 24, move: "static", subj: [["M", C.mother], ["F", C.father]] },
+          refs: [["vendor_talk1.jpg", "REF FOLDER · scene ref / family speaking with vendor"], ["board02C.jpg", "VISUAL BOOK p.10 · board 02C"]] },
+        { id: "s5g", k: "5G", seq: 5, type: "CLOSE", dur: 4, title: "Cold sweat",
+          cam: "85mm · eye-level 1.5m · slow push-in", light: "Key stays warm, but the frame darkens as the mela sound falls away",
+          env: "Background bokeh sinks toward black",
+          cast: "Father and mother, both looking at the seller off-right; sweat at the temples",
+          note: "Let the mela sound thin under their reaction. Hold — no cut on the line's end.",
+          vo: "Aur jawab bhi aise the ki sun kar dono ke pasine chhoot gaye.", gl: "And the answers were enough to leave them both in a cold sweat.",
+          plan: { fov: 24, move: "push", subj: [["F", C.father], ["M", C.mother]] },
+          refs: [["vendor_talk1.jpg", "REF FOLDER · scene ref / family speaking with vendor"], ["board02C.jpg", "VISUAL BOOK p.10 · board 02C"]] },
+        { id: "s6a", k: "6A", seq: 6, type: "WIDE", dur: 3.4, title: "Bigger than one family",
+          cam: "24mm · raised 3m · slow pull back", light: "Night; one cool lamp marks the Mela Chowki at the end of the lane",
+          env: "Stall lane to the Mela Chowki tent and wireless mast (Part 2 location)",
+          cast: "Parents and seller, small in the lane",
+          note: "The last diegetic image of Part 1. A wireless crackle carries us into the narrator set.",
+          vo: "Par ye dar sirf Gupta family tak rukne wala nahi tha.", gl: "But this fear was not going to stop at the Gupta family.",
+          plan: { fov: 74, move: "back", subj: [["F", C.father], ["M", C.mother], ["V", C.vendor]], high: true },
+          refs: [["vendor_talk2.jpg", "REF FOLDER · scene ref / with the vendor"], ["book_mela.jpg", "VISUAL BOOK p.03 · Mela / Density"]] },
+        { id: "s6b", k: "6B", seq: 6, type: "WIDE", dur: 3.8, title: "From constable to DGP", inT: "CUT · NARRATOR SET",
+          cam: "35mm · eye-level 1.55m · static", light: "Soft warm key from left, one cool background practical; khaki and charcoal grade",
+          env: "Textured narrator set; the right half is left empty for the ladder composite",
+          cast: "Host at a desk, left third",
+          note: "One restrained ladder in post: only Constable (Mela Chowki) and DGP (Lucknow) get labels.",
+          vo: "Mela Chowki ke Constable se lekar Lucknow mein baithe DGP tak —", gl: "From the constable at the mela police post to the DGP in Lucknow —",
+          plan: { fov: 54, move: "static", subj: [["H", C.host]] },
+          refs: [["board02D.jpg", "VISUAL BOOK p.10 · board 02D"], ["book_cover.jpg", "VISUAL BOOK p.01 · tone reference"]] },
+        { id: "s6c", k: "6C", seq: 6, type: "MEDIUM", dur: 3.6, title: "Every level shaken",
+          cam: "50mm · eye-level 1.55m · slow restrained push (board 02D)", light: "Warm key from left, cool practical behind; 4:1",
+          env: "Narrator set; ladder in the right third",
+          cast: "Host, left third, addressing the lens",
+          note: "The rungs shake one after another on “har level ko hilane”. No invented officers.",
+          vo: "Dhruv ki talaash Police system ke har level ko hilane wali thi.", gl: "The search for Dhruv would shake every level of the police system.",
+          plan: { fov: 40, move: "push", subj: [["H", C.host]] },
+          refs: [["board02D.jpg", "VISUAL BOOK p.10 · board 02D"], ["book_cover.jpg", "VISUAL BOOK p.01 · tone reference"]] },
+        { id: "s6d", k: "6D", seq: 6, type: "CLOSE", dur: 7, title: "Not just a kidnapping case",
+          cam: "85mm · eye-level 1.55m · very slow push", light: "Warm key, 4:1; the ladder echoes faintly at frame-right",
+          env: "Narrator set, ladder faded to 35%",
+          cast: "Host, close, to the lens",
+          note: "The programme's promise. Eyes only, no gestures; the ladder becomes the “seedhi”.",
+          vo: "Isliye hamare liye ye sirf kidnapping ka case nahi hai. Balki ye wo seedhi hai jispar chadh kar hum ek-ek karke dekhenge", gl: "So for us this isn't just a kidnapping case. It's a ladder we'll climb, one rung at a time, to see",
+          plan: { fov: 24, move: "push", subj: [["H", C.host]] },
+          refs: [["board02D.jpg", "VISUAL BOOK p.10 · board 02D"], ["book_cover.jpg", "VISUAL BOOK p.01 · tone reference"]] },
+        { id: "s6e", k: "6E", seq: 6, type: "CLOSE", dur: 4.2, title: "Stars and badges",
+          cam: "100mm macro · shoulder height · slow lateral slide", light: "Raking 3000K key from the left picks out the star silhouettes",
+          env: "A khaki uniform on a stand in the narrator set",
+          cast: "No one — the uniform is the subject",
+          note: "Blank star and badge silhouettes only; labels in post. No unsupported insignia.",
+          vo: "Ki uniform pe lage in stars aur badges ka… matlab kya hota hai?", gl: "what the stars and badges on a uniform actually mean.",
+          plan: { fov: 14, move: "drift", subj: [] },
+          refs: [["board02D.jpg", "VISUAL BOOK p.10 · board 02D (badge note)"], ["book_cover.jpg", "VISUAL BOOK p.01 · tone reference"]] },
+        { id: "s6f", k: "6F", seq: 6, type: "MEDIUM", dur: 6, title: "SHO, IO, CO — ranks or posts?",
+          cam: "50mm · eye-level 1.55m · static", light: "Warm key from left; the tags glow amber in post",
+          env: "Narrator set; ladder mid-frame, three tags float beside it",
+          cast: "Host, left third",
+          note: "The tags hang off the ladder, not on a rung: whether they are ranks is the open question.",
+          vo: "Police ki alag-alag ranks actually mein karti kya hai? SHO, IO, CO — ye ranks hain ya kuch aur?", gl: "What do the different police ranks actually do? SHO, IO, CO: are these ranks, or something else?",
+          plan: { fov: 40, move: "static", subj: [["H", C.host]] },
+          refs: [["board02D.jpg", "VISUAL BOOK p.10 · board 02D"], ["book_cover.jpg", "VISUAL BOOK p.01 · tone reference"]] },
+        { id: "s6g", k: "6G", seq: 6, type: "CLOSE", dur: 7, title: "Who is the most powerful?",
+          cam: "Graphic · tilt up the ladder · hold on the top", light: "Flat graphic; the top rung is the only rust accent",
+          env: "The ladder composite, full frame",
+          cast: "None",
+          note: "Tilt from Constable to an empty top rung. The question closes Part 1 and hands to Part 2.",
+          vo: "Aur seedhi mein sabse upar pahunch kar hum is ek sawal ka jawab dhoondhenge — ki Police mein sabse powerful kaun hai.", gl: "And at the top of the ladder we'll answer one question: who is the most powerful person in the police?",
+          plan: { fov: 54, move: "static", subj: [] },
+          refs: [["board02D.jpg", "VISUAL BOOK p.10 · board 02D"], ["book_cover.jpg", "VISUAL BOOK p.01 · tone reference"]] },
+      ];
+
+      function planSvg(p) {
+        const cx = 125, cy = 150, len = 118, a = (p.fov / 2) * Math.PI / 180;
+        const lx = cx - Math.sin(a) * len, rx = cx + Math.sin(a) * len, ty = cy - Math.cos(a) * len;
+        let s = `<svg viewBox="0 0 250 172" xmlns="http://www.w3.org/2000/svg"><defs><marker id="pm${p.fov}${p.move}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="${C.ink}"/></marker></defs>`;
+        s += `<text x="10" y="18" font-size="11" letter-spacing="1.5" fill="#9aa0a8" font-weight="700">CAMERA PLAN · TOP-DOWN</text>`;
+        s += `<rect x="95" y="26" width="60" height="140" fill="#2a2219"/>`;
+        s += `<polygon points="${cx},${cy} ${f1(lx)},${f1(ty)} ${f1(rx)},${f1(ty)}" fill="${C.cool}" opacity=".16" stroke="${C.cool}" stroke-opacity=".6"/>`;
+        s += `<rect x="${cx - 9}" y="${cy - 6}" width="18" height="14" fill="${C.ink}"/><polygon points="${cx - 5},${cy - 6} ${cx + 5},${cy - 6} ${cx + 8},${cy - 13} ${cx - 8},${cy - 13}" fill="${C.ink}"/>`;
+        p.subj.forEach((sj, i) => {
+          const n = p.subj.length, x = cx - (n - 1) * 13 + i * 26, y = 72;
+          s += `<circle cx="${x}" cy="${y}" r="10" fill="${sj[1]}"/><text x="${x}" y="${y + 4}" font-size="11" text-anchor="middle" font-weight="800" fill="#0c0d0f">${sj[0]}</text>`;
+        });
+        s += `<circle cx="24" cy="58" r="8" fill="${C.amber}"/><line x1="34" y1="62" x2="70" y2="74" stroke="${C.amber}" stroke-width="2"/><text x="12" y="44" font-size="10" fill="${C.amber}" font-weight="700">KEY</text>`;
+        const mk = `marker-end="url(#pm${p.fov}${p.move})"`;
+        if (p.move === "drift") s += `<line x1="150" y1="${cy + 4}" x2="205" y2="${cy + 4}" stroke="${C.ink}" stroke-width="2" ${mk}/><text x="160" y="${cy - 6}" font-size="10" fill="${C.ink}">DRIFT</text>`;
+        if (p.move === "push") s += `<line x1="160" y1="${cy + 4}" x2="160" y2="${cy - 26}" stroke="${C.ink}" stroke-width="2" ${mk}/><text x="170" y="${cy - 10}" font-size="10" fill="${C.ink}">PUSH</text>`;
+        if (p.move === "back") s += `<line x1="160" y1="${cy - 26}" x2="160" y2="${cy + 6}" stroke="${C.ink}" stroke-width="2" ${mk}/><text x="170" y="${cy - 10}" font-size="10" fill="${C.ink}">DOLLY BACK</text>`;
+        if (p.move === "static") s += `<text x="160" y="${cy - 2}" font-size="10" fill="${C.ink}">LOCKED OFF</text>`;
+        if (p.high) s += `<text x="160" y="${cy + 16}" font-size="10" fill="${C.amber}">HIGH ANGLE</text>`;
+        return s + `<text x="10" y="166" font-size="10" fill="${C.cool}">${p.fov}° HFOV</text></svg>`;
+      }
+      const fmt = (t) => { const d = Math.round(t * 10), s = Math.floor(d / 10); return `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}.${d % 10}`; };
+
+      // shot starts come from the durations; the static <section> timings must agree (fails loud if not)
+      let acc = 0;
+      for (const sh of SHOTS) {
+        sh.start = acc; acc = Math.round((acc + sh.dur) * 100) / 100;
+        const el = document.getElementById(sh.id);
+        if (!el || Math.abs(+el.dataset.start - sh.start) > 0.001 || Math.abs(+el.dataset.duration - sh.dur) > 0.001) throw new Error(`#${sh.id} section timing out of sync with SHOTS`);
+      }
+      const TOTAL = acc;
+      if (Math.abs(+document.getElementById("root").dataset.duration - TOTAL) > 0.001) throw new Error("#root duration out of sync with SHOTS");
+      const A = Object.fromEntries(SHOTS.map((s) => [s.id, s.start])), D = Object.fromEntries(SHOTS.map((s) => [s.id, s.dur]));
+
+      for (const sh of SHOTS) {
+        const el = document.getElementById(sh.id), sq = SEQ[sh.seq], tcol = TYPE[sh.type];
+        const [lens, height, move] = sh.cam.split(" · ");
+        el.innerHTML =
+          `<div class="panel"><div class="cam" id="${sh.id}-cam">${scenes[sh.id]()}</div>` +
+          `<div class="corner mono" style="color:${tcol}">SHOT ${sh.k} · ${sh.type}</div>` +
+          `<div class="plan">${planSvg(sh.plan)}</div>` +
+          `<div class="hud mono"><span class="k">${sh.k}</span><span>${lens}</span><span>${height}</span><span>${move}</span></div></div>` +
+          `<aside class="side"><div class="top"><div class="num">${sh.k}</div><span class="chip t" style="background:${tcol}">${sh.type}</span><span class="chip" style="border-color:${sq.c}">${sq.n}</span></div>` +
+          `<h2>${sh.title}</h2><div class="tcr mono">${fmt(sh.start)} → ${fmt(sh.start + sh.dur)} · ${sh.dur.toFixed(1)}s · ${sh.inT || "HARD CUT IN"}</div>` +
+          `<div class="rows"><div class="row"><div class="lb">CAMERA</div><div class="v">${sh.cam}</div></div>` +
+          `<div class="row"><div class="lb">LIGHTING</div><div class="v">${sh.light}</div></div>` +
+          `<div class="row"><div class="lb">ENVIRONMENT</div><div class="v">${sh.env}</div></div>` +
+          `<div class="row"><div class="lb">CHARACTERS</div><div class="v">${sh.cast}</div></div>` +
+          `<div class="row"><div class="lb">DIRECTION</div><div class="v">${sh.note}</div></div></div>` +
+          `<div class="refs"><div class="lb">REFERENCE</div><div class="thumbs">` +
+          sh.refs.map(([src, cap]) => `<div class="thumb"><div class="img"><img src="assets/refs/${src}" alt="${cap}" /></div><div class="cap">${cap}</div></div>`).join("") +
+          `</div></div></aside>` +
+          `<div class="vo"><span class="tag">${sh.tag || (sh.sfx ? "SFX" : "VO")}</span><div><div class="txt" style="font-size:${sh.vo.length > 80 ? 25 : 30}px">${sh.sfx || sh.raw ? sh.vo : `“${sh.vo}”`}</div><div class="gl">${sh.gl}</div></div></div>`;
+      }
+
+      // bottom strip: sequence bars, shot cells, playhead
+      const PX = 1824 / TOTAL;
+      let strip = `<div class="seqrow">`;
+      SEQ.forEach((sq, i) => {
+        const ss = SHOTS.filter((s) => s.seq === i), a = ss[0].start, b = ss[ss.length - 1].start + ss[ss.length - 1].dur;
+        strip += `<div class="seq" style="left:${a * PX}px;width:${(b - a) * PX - 6}px;border-color:${sq.c}">${sq.s}</div>`;
+      });
+      strip += `</div><div class="cells">`;
+      for (const sh of SHOTS) {
+        strip += `<div class="cell" style="left:${sh.start * PX}px;width:${sh.dur * PX - 4}px;border-top-color:${TYPE[sh.type]}"><b>${sh.k}</b><em class="mono">${sh.dur.toFixed(1)}s</em><div class="on" id="on-${sh.id}"></div></div>`;
+      }
+      strip += `</div><div class="playhead" id="playhead"></div>`;
+      document.getElementById("strip").innerHTML = strip;
+
+      // ---------- timeline (every tween is placed relative to its shot: A.id + offset) ----------
+      const tl = gsap.timeline({ paused: true });
+      const tc = document.getElementById("tc"), scn = document.getElementById("scn");
+      let lastSeq = -1;
+      tl.fromTo("#playhead", { x: 0 }, { x: 1821, duration: TOTAL, ease: "none" }, 0);
+      tl.fromTo({ t: 0 }, { t: 0 }, { t: TOTAL, duration: TOTAL, ease: "none", onUpdate() {
+        const t = this.targets()[0].t, sh = SHOTS.findLast((s) => s.start <= t + 1e-6);
+        tc.textContent = `${fmt(t)} / ${fmt(TOTAL)}`;
+        if (sh.seq !== lastSeq) { lastSeq = sh.seq; scn.textContent = SCN[sh.seq]; }
+      } }, 0);
+      for (const sh of SHOTS) {
+        tl.fromTo(`#on-${sh.id}`, { opacity: 0 }, { opacity: 1, duration: 0.15 }, sh.start);
+        tl.to(`#on-${sh.id}`, { opacity: 0, duration: 0.15 }, sh.start + sh.dur - 0.05);
+        // side card + VO settle in on every cut
+        tl.from(`#${sh.id} .side .row`, { opacity: 0, x: 18, duration: 0.3, stagger: 0.04, ease: "power2.out" }, sh.start + 0.05);
+        tl.from(`#${sh.id} .vo .txt`, { opacity: 0, y: 10, duration: 0.3, ease: "power2.out" }, sh.start + 0.05);
+        if (document.getElementById(sh.id).querySelector(".draw")) tl.from(`#${sh.id} .draw`, { opacity: 0, duration: 0.35 }, sh.start + 0.25);
+      }
+      const bulbsIn = (id) => {
+        const n = Math.max(0, Math.floor(D[id] / 0.6) - 1);
+        tl.to(`#${id} .bulb`, { opacity: 0.55, duration: 0.3, stagger: { each: 0.02, from: "random" }, yoyo: true, repeat: n, ease: "sine.inOut" }, A[id]);
+      };
+      const bob = (sel, t0, dur, amp, per) => tl.fromTo(sel, { y: 0 }, { y: -amp, duration: per, yoyo: true, repeat: Math.max(1, Math.round(dur / per) - 1), ease: "sine.inOut" }, t0);
+      const fadeIn = (sel, t, d = 0.4) => tl.fromTo(sel, { opacity: 0 }, { opacity: 1, duration: d }, t);
+
+      // 0A — hold on the map, then one continuous zoom that lands exactly on 1A
+      tl.fromTo({ z: 0 }, { z: 0 }, { z: 2, duration: 3.1, ease: "power2.inOut", onUpdate() { applyZoom(this.targets()[0].z); } }, A.s0a + 0.4);
+      // 1A — slow push, H00 clock composite after first living image
+      tl.fromTo("#s1a-cam", { scale: 1 }, { scale: 1.07, duration: D.s1a, ease: "none" }, A.s1a);
+      tl.fromTo("#s1a-crowd", { x: -6 }, { x: 6, duration: D.s1a, ease: "none" }, A.s1a);
+      bulbsIn("s1a");
+      tl.fromTo("#s1a-h00", { opacity: 0, x: -16 }, { opacity: 1, x: 0, duration: 0.4, ease: "power2.out" }, A.s1a + 1);
+      // 1B — lateral drift, foreground occluders cross
+      tl.fromTo("#s1b-cam", { x: 20 }, { x: -24, duration: D.s1b, ease: "none" }, A.s1b);
+      tl.fromTo("#s1b-fg1", { x: -260 }, { x: 420, duration: D.s1b, ease: "none" }, A.s1b);
+      tl.fromTo("#s1b-fg2", { x: 200 }, { x: -380, duration: D.s1b, ease: "none" }, A.s1b);
+      tl.fromTo("#s1b-mid", { x: -10 }, { x: 14, duration: D.s1b, ease: "none" }, A.s1b);
+      bulbsIn("s1b");
+      // 2A — drift, family walks in place, foreground crosses
+      tl.fromTo("#s2a-cam", { x: 18 }, { x: -18, duration: D.s2a, ease: "none" }, A.s2a);
+      tl.fromTo("#s2a-fg", { x: 160 }, { x: -260, duration: D.s2a, ease: "none" }, A.s2a);
+      bob("#s2a-fam", A.s2a, D.s2a, 4, 0.275);
+      // 2B — dolly back keeps them the same size; walk bob
+      tl.fromTo("#s2b-cam", { scale: 1.04 }, { scale: 1.0, duration: D.s2b, ease: "none" }, A.s2b);
+      bob("#s2b-fam", A.s2b, D.s2b, 8, 0.2);
+      // 2C — tiny push on Dhruv
+      tl.fromTo("#s2c-cam", { scale: 1 }, { scale: 1.06, duration: D.s2c, ease: "power1.inOut", transformOrigin: "43% 40%" }, A.s2c);
+      // 3A — the tug, repeated; eye-line to balloons
+      tl.fromTo("#s3a-tug", { rotation: 0 }, { rotation: -14, svgOrigin: "533 366", duration: 0.25, yoyo: true, repeat: 11, ease: "sine.inOut" }, A.s3a + 0.2);
+      bob("#s3a-bal", A.s3a, D.s3a, 8, 0.8);
+      fadeIn("#s3a-eye", A.s3a + 0.9);
+      // 3B — eye-line swings from parents to balloons
+      tl.fromTo("#s3b-eye", { rotation: -150 }, { rotation: -25, svgOrigin: "660 330", duration: 0.7, ease: "power2.inOut" }, A.s3b + 0.7);
+      tl.to("#s3b-l1", { opacity: 0.25, duration: 0.3 }, A.s3b + 0.8);
+      tl.to("#s3b-l2", { opacity: 1, duration: 0.3 }, A.s3b + 1.2);
+      // 3C — he leaves frame-right, passer-by crosses, then hold the gap
+      tl.fromTo("#s3c-dhruv", { x: 0 }, { x: 760, duration: 1.45, ease: "power1.in" }, A.s3c + 0.15);
+      tl.fromTo("#s3c-dhruv > g", { y: 0 }, { y: -5, duration: 0.18, yoyo: true, repeat: 7, ease: "sine.inOut" }, A.s3c + 0.15);
+      tl.fromTo("#s3c-pass", { x: 0 }, { x: -1700, duration: 1.3, ease: "none" }, A.s3c + 0.3);
+      fadeIn("#s3c-gap", A.s3c + 1.6);
+      tl.fromTo("#s3c-exit", { opacity: 1 }, { opacity: 0.3, duration: 0.4 }, A.s3c + 1.6);
+      // 4A — +10 min clock, tiny push then hold, the gap reads
+      fadeIn("#s4a-h10", A.s4a + 0.3, 0.3);
+      tl.fromTo("#s4a-cam", { scale: 1 }, { scale: 1.04, duration: 1.4, ease: "power1.out", transformOrigin: "50% 55%" }, A.s4a);
+      fadeIn("#s4a-eye", A.s4a + 0.6);
+      fadeIn("#s4a-gap", A.s4a + 1.4, 0.5);
+      // 4B — her eye-line: jhoola, then dukaan
+      tl.fromTo("#s4b-cam", { x: 10 }, { x: -10, duration: D.s4b, ease: "none" }, A.s4b);
+      fadeIn("#s4b-e1", A.s4b + 1.0);
+      fadeIn("#s4b-e2", A.s4b + 1.9);
+      // 4C — three directions
+      tl.fromTo("#s4c-f", { x: 0 }, { x: -320, duration: 1.9, ease: "power1.in" }, A.s4c + 0.3);
+      tl.fromTo("#s4c-m", { x: 0 }, { x: 320, duration: 1.9, ease: "power1.in" }, A.s4c + 0.3);
+      tl.fromTo("#s4c-s", { y: 0, scale: 1 }, { y: -90, scale: 0.75, transformOrigin: "50% 100%", duration: 1.9, ease: "power1.in" }, A.s4c + 0.3);
+      bob("#s4c-f > g, #s4c-m > g, #s4c-s > g", A.s4c + 0.3, 1.9, 5, 0.2);
+      bulbsIn("s4c");
+      // 4D — the queue has no blue jacket
+      tl.fromTo("#s4d-cam", { x: 0 }, { x: -16, duration: D.s4d, ease: "none" }, A.s4d);
+      fadeIn("#s4d-none", A.s4d + 0.9);
+      bulbsIn("s4d");
+      // 5A — parents walk in to the seller
+      tl.fromTo("#s5a-par", { x: -300 }, { x: 0, duration: 2.8, ease: "power1.out" }, A.s5a);
+      bob("#s5a-par", A.s5a, 2.8, 5, 0.25);
+      // 5B — "chhota bachcha": the hand drops to child height
+      tl.fromTo("#s5b-gest", { rotation: 40 }, { rotation: 0, svgOrigin: "374 392", duration: 0.5, ease: "power2.out" }, A.s5b + 1.6);
+      // 5C — the nod on "Haan"
+      tl.fromTo("#s5c-sel", { y: 0 }, { y: 8, duration: 0.18, yoyo: true, repeat: 3, ease: "sine.inOut" }, A.s5c + 1.5);
+      // 5D — two fingers on "do aadmi"
+      tl.fromTo("#s5d-hand", { y: 140, opacity: 0 }, { y: 0, opacity: 1, duration: 0.45, ease: "power2.out" }, A.s5d + 1.8);
+      // 5E — he points on "us gate se"; the parents turn to the gate
+      tl.fromTo("#s5e-point", { rotation: -115 }, { rotation: 0, svgOrigin: "864 377", duration: 0.5, ease: "power2.out" }, A.s5e + 3.0);
+      fadeIn("#s5e-line", A.s5e + 3.4);
+      tl.to("#s5e-pl", { opacity: 0, duration: 0.2 }, A.s5e + 3.6);
+      fadeIn("#s5e-pr", A.s5e + 3.6, 0.2);
+      // 5F — five answer cards, one by one
+      tl.from("#s5f .ans", { opacity: 0, x: 24, duration: 0.3, stagger: 0.3, ease: "power2.out" }, A.s5f + 1.6);
+      // 5G — slow push; the mela sound (and light) falls away; sweat on "pasine"
+      tl.fromTo("#s5g-cam", { scale: 1 }, { scale: 1.08, duration: D.s5g, ease: "none", transformOrigin: "50% 45%" }, A.s5g);
+      tl.fromTo("#s5g-dim", { opacity: 0 }, { opacity: 0.45, duration: 2.5 }, A.s5g + 1.0);
+      fadeIn("#s5g .sweat", A.s5g + 2.4, 0.5);
+      // 6A — pull back; the chowki's wireless pulses
+      tl.fromTo("#s6a-cam", { scale: 1.12 }, { scale: 1, duration: D.s6a, ease: "power1.out", transformOrigin: "45% 60%" }, A.s6a);
+      tl.fromTo("#s6a .wave", { opacity: 0.1 }, { opacity: 1, duration: 0.3, stagger: 0.15, yoyo: true, repeat: 7, ease: "sine.inOut" }, A.s6a);
+      // 6B — the ladder builds from constable to DGP
+      tl.fromTo("#s6b-lad", { scaleY: 0 }, { scaleY: 1, transformOrigin: "50% 100%", duration: 1.6, ease: "power2.out" }, A.s6b + 0.2);
+      fadeIn("#s6b-lo", A.s6b + 0.6);
+      fadeIn("#s6b-hi", A.s6b + 2.6);
+      // 6C — restrained push; every rung shakes on "har level ko hilane"
+      tl.fromTo("#s6c-cam", { scale: 1 }, { scale: 1.04, duration: D.s6c, ease: "none", transformOrigin: "30% 45%" }, A.s6c);
+      tl.fromTo("#s6c .rung", { x: 0 }, { x: 7, duration: 0.06, yoyo: true, repeat: 5, stagger: 0.1, ease: "none" }, A.s6c + 1.8);
+      // 6D — very slow push on the host
+      tl.fromTo("#s6d-cam", { scale: 1 }, { scale: 1.06, duration: D.s6d, ease: "none", transformOrigin: "46% 45%" }, A.s6d);
+      // 6E — slide across the uniform; stars pick up the key on "stars"
+      tl.fromTo("#s6e-cam", { x: 30 }, { x: -30, duration: D.s6e, ease: "none" }, A.s6e);
+      tl.fromTo("#s6e .star", { opacity: 0.35 }, { opacity: 1, duration: 0.3, stagger: 0.4 }, A.s6e + 1.2);
+      // 6F — SHO / IO / CO float in beside the ladder
+      tl.from("#s6f .tag", { opacity: 0, x: 30, duration: 0.35, stagger: 0.45, ease: "power2.out" }, A.s6f + 3.3);
+      // 6G — tilt up to the empty top rung, then the question
+      tl.fromTo("#s6g-lad", { y: 0 }, { y: 700, duration: 4.2, ease: "power1.inOut" }, A.s6g + 0.4);
+      tl.fromTo("#s6g-q", { scale: 0.4, opacity: 0 }, { scale: 1, opacity: 1, transformOrigin: "50% 50%", duration: 0.5, ease: "back.out(2)" }, A.s6g + 4.8);
+      fadeIn("#s6g-end", A.s6g + 5.8);
+
+      window.__timelines["main"] = tl;
+    </script>
+  </body>
+</html>

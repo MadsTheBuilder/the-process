@@ -1,0 +1,18 @@
+# Heavy media: GitHub rejects files over 100 MB and these are all regenerable or source footage
+Taruns_recording/
+*.mov
+*.mp4
+*.wav
+*.blend
+*.blend1
+part1-storytime/blockout/frames/
+
+# Tool caches and scratch
+__pycache__/
+node_modules/
+.thumbnails/
+.hyperframes/
+*.log
+
+# Local agent config and vendored skills (reinstall from skills-lock.json)
+.claude/
