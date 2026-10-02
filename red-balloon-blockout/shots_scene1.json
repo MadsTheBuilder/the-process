@@ -1,0 +1,211 @@
+[
+ {
+  "no": 1,
+  "desc": "Opening. The Mirzapur mela at blue hour: ferris wheel, stalls, thousands of people. Camera drifts in over the lights toward the crowd.",
+  "mag": "ELS",
+  "mov": "Drone push in + slow tilt down",
+  "lens": "24",
+  "angle": "High / Top down",
+  "notes": "Super: GHANTA 00 (timestamp style used through the film). Mixed sodium + LED fairy-light palette. Sets scale before we go small.",
+  "audio": "VO: 'Shaam ke 7 baj rahe the.' + mela ambience",
+  "dur": "5 seconds"
+ },
+ {
+  "no": 2,
+  "desc": "Dense crowd compressed through the ferris wheel spokes; heads, balloons, food smoke.",
+  "mag": "LS",
+  "mov": "Static",
+  "lens": "135",
+  "angle": "Eye Level",
+  "notes": "Long-lens compression = claustrophobia. Plant red balloons in frame, but not dominant yet.",
+  "audio": "VO: 'Mirzapur ke mele mein chaaron taraf bas bheed hi bheed thi.'",
+  "dur": "4 seconds"
+ },
+ {
+  "no": 3,
+  "desc": "The Gupta family (parents + kids) walking through the stalls, laughing, eating.",
+  "mag": "MLS",
+  "mov": "Gimbal follow from behind, arcs to frontal",
+  "lens": "35",
+  "angle": "Eye Level",
+  "notes": "Warm, happy grade. This is the last 'normal' moment of the film.",
+  "audio": "VO: 'Isi bheed mein Gupta family bhi thi...'",
+  "dur": "5 seconds"
+ },
+ {
+  "no": 4,
+  "desc": "Dhruv (8) holding father's finger, blue jacket, zip held shut with a safety pin.",
+  "mag": "MCU",
+  "mov": "Static",
+  "lens": "50",
+  "angle": "Child's eye level (low)",
+  "notes": "IMPORTANT PLANT: the safety pin on the zip must be visible here. Pays off in Shot 78.",
+  "audio": "VO: 'Aur unhi bachchon mein tha 8 saal ka Dhruv.'",
+  "dur": "3 seconds"
+ },
+ {
+  "no": 5,
+  "desc": "Dhruv's POV: a cluster of balloons on a vendor's pole across the crowd. One red balloon catches the light.",
+  "mag": "CU",
+  "mov": "Static, rack focus crowd to balloons",
+  "lens": "85",
+  "angle": "Low (Dhruv POV)",
+  "notes": "The red balloon is the film's motif. Keep it the only saturated red in frame.",
+  "audio": "Ambience, crowd dips slightly",
+  "dur": "3 seconds"
+ },
+ {
+  "no": 6,
+  "desc": "Dhruv tugging mother's dupatta, pointing, pleading. Parents are busy bargaining at a stall.",
+  "mag": "MS",
+  "mov": "Handheld",
+  "lens": "50",
+  "angle": "Eye Level",
+  "notes": "Parents' faces cut off by the frame top: to Dhruv they are unreachable.",
+  "audio": "VO: 'Blue jacket pehne Dhruv pichhle aadhe ghante se balloon lene ki zid kar raha tha.'",
+  "dur": "5 seconds"
+ },
+ {
+  "no": 7,
+  "desc": "Dhruv's hand slowly slips out of his father's hand.",
+  "mag": "ECU",
+  "mov": "Static, slow motion (48-60fps)",
+  "lens": "100 Macro",
+  "angle": "Eye Level",
+  "notes": "The inciting moment. Hold the empty hand for a beat after.",
+  "audio": "VO: 'Jab kisi ne uski baat nahi suni...'",
+  "dur": "3 seconds"
+ },
+ {
+  "no": 8,
+  "desc": "Parents soft in the foreground, still bargaining. In the background Dhruv walks away and the crowd swallows him.",
+  "mag": "LS",
+  "mov": "Static",
+  "lens": "85",
+  "angle": "Eye Level",
+  "notes": "Deep staging. Focus stays on Dhruv, parents unaware in the foreground.",
+  "audio": "VO: '...to woh chupchaap balloon lene khud chala gaya.'",
+  "dur": "4 seconds"
+ },
+ {
+  "no": 9,
+  "desc": "Speed ramp: the crowd blurs, then snaps to normal speed. Mother turns, smile fading, looks down beside her. Empty.",
+  "mag": "MS",
+  "mov": "Static, rack focus",
+  "lens": "50",
+  "angle": "Eye Level",
+  "notes": "Super: +10 MIN. SFX: heartbeat thump on the rack.",
+  "audio": "VO: 'Kareeb 10 minute baad gharwalon ko jab wo kahin nahi dikha...'",
+  "dur": "4 seconds"
+ },
+ {
+  "no": 10,
+  "desc": "Family scatters in different directions through the crowd, seen from above.",
+  "mag": "ELS",
+  "mov": "Drone static top down",
+  "lens": "24",
+  "angle": "Top down",
+  "notes": "Four figures splitting apart like a crack.",
+  "audio": "VO: 'To unhe laga kisi jhoole ya dukaan ke paas ruk gaya hoga. Sab alag-alag taraf dhoondhne lage.'",
+  "dur": "5 seconds"
+ },
+ {
+  "no": 11,
+  "desc": "Quick inserts: father at the jhoola, mother at the toy stall, uncle near the food carts, each calling out 'Dhruv!'",
+  "mag": "MCU",
+  "mov": "Handheld, whip pans between cuts",
+  "lens": "25",
+  "angle": "Eye Level",
+  "notes": "Fast cutting. Lose the geography on purpose; build panic.",
+  "audio": "VO: 'Par Dhruv nahi mila.' + parents calling 'Dhruv!'",
+  "dur": "4 seconds"
+ },
+ {
+  "no": 12,
+  "desc": "Parents reach the balloon seller. Balloons frame the foreground.",
+  "mag": "LS",
+  "mov": "Slow track in",
+  "lens": "35",
+  "angle": "Eye Level",
+  "notes": "Seller half-hidden by his own balloons (quiet foreshadow; he is the suspect).",
+  "audio": "VO: 'Dhoondhte-dhoondhte Dhruv ke maa-baap ek balloon bechne wale ke paas pahunche.'",
+  "dur": "4 seconds"
+ },
+ {
+  "no": 13,
+  "desc": "Father, breathless, asks the seller.",
+  "mag": "MCU",
+  "mov": "Handheld",
+  "lens": "50",
+  "angle": "Eye Level (OTS seller)",
+  "notes": "",
+  "audio": "Father: 'Bhaiya, blue jacket pehne ek chhota bachcha yahan aaya tha kya?'",
+  "dur": "3 seconds"
+ },
+ {
+  "no": 14,
+  "desc": "Balloon seller answers quickly and confidently, pointing toward the gate.",
+  "mag": "MCU",
+  "mov": "Static",
+  "lens": "85",
+  "angle": "Slightly low",
+  "notes": "He answers too fast. Play it neutral; the audience should not suspect him yet.",
+  "audio": "Seller: 'Haan. Abhi kuch der pehle aaya tha. Lekin balloon lene se pehle do aadmi uske paas aaye...'",
+  "dur": "5 seconds"
+ },
+ {
+  "no": 15,
+  "desc": "RECREATION (seller's version): two men approach Dhruv, one thin with a black cap hands him a red balloon; they lead him to a white van. Faces never shown, backs and silhouettes only.",
+  "mag": "MS",
+  "mov": "Handheld",
+  "lens": "35",
+  "angle": "Eye Level",
+  "notes": "'Told' grade: desaturated, slight frame blur. Mirrored later in Shot 152 with the TRUE version.",
+  "audio": "Seller (cont., as VO): '...Unhone use red balloon diya, white van mein bithaya... aur us gate se nikal gaye.'",
+  "dur": "5 seconds"
+ },
+ {
+  "no": 16,
+  "desc": "Father's face, sweat, the words landing. Mother's hand grips his arm.",
+  "mag": "ECU",
+  "mov": "Static, slow push in",
+  "lens": "100",
+  "angle": "Eye Level",
+  "notes": "",
+  "audio": "VO: 'Dhruv ke pita ke is ek sawal ke unhe 5 jawab mile. Aur jawab bhi aise the ki sun kar dono ke pasine chhoot gaye.'",
+  "dur": "6 seconds"
+ },
+ {
+  "no": 17,
+  "desc": "Crane up off the parents into the night sky; VFX map zoom-out from the mela to Mirzapur to UP to Lucknow HQ.",
+  "mag": "ELS",
+  "mov": "Crane up into VFX map zoom",
+  "lens": "24",
+  "angle": "High to Top down",
+  "notes": "Map style reused for every level of the hierarchy. Keep one consistent map graphic system.",
+  "audio": "VO: 'Par ye dar sirf Gupta family tak rukne wala nahi tha. Mela Chowki ke Constable se lekar Lucknow mein baithe DGP tak - Dhruv ki talaash Police system ke har level ko hilane wali thi.'",
+  "dur": "9 seconds"
+ },
+ {
+  "no": 18,
+  "desc": "Macro montage of uniform details: shoulder stars, Ashoka emblem, belt buckle, name plate, badges. Graphic ladder of ranks builds up the screen.",
+  "mag": "ECU",
+  "mov": "Slow slider moves",
+  "lens": "100 Macro",
+  "angle": "Various",
+  "notes": "Dark background, hard rim light on the metal. Question text appears on screen: SHO? IO? CO?",
+  "audio": "VO: 'Isliye hamare liye ye sirf kidnapping ka case nahi hai... SHO, IO, CO - ye ranks hain ya kuch aur?'",
+  "dur": "18 seconds"
+ },
+ {
+  "no": 19,
+  "desc": "TITLE: a single red balloon rises into the black sky. Title OPERATION RED BALLOON with RED in red.",
+  "mag": "LS",
+  "mov": "Static, balloon rises out of frame",
+  "lens": "50",
+  "angle": "Low",
+  "notes": "Title card. Music hit on the title.",
+  "audio": "VO: 'Aur seedhi mein sabse upar pahunch kar hum is ek sawal ka jawab dhoondhenge, ki Police mein sabse powerful kaun hai.'",
+  "dur": "7 seconds"
+ }
+]

@@ -6,6 +6,7 @@ Taruns_recording/
 *.blend
 *.blend1
 part1-storytime/blockout/frames/
+draupadi-blockout/out/f[0-9]*/
 
 # Tool caches and scratch
 __pycache__/
